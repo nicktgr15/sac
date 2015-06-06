@@ -17,7 +17,7 @@ setup(
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',
     url='https://github.com/nicktgr15/sac',
-    download_url='https://github.com/peterldowns/mypackage/tarball/0.1',
+    download_url='https://github.com/nicktgr15/sac/archive/0.1.tar.gz',
     keywords=[],
     classifiers=[]
 )
