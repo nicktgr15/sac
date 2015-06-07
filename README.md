@@ -47,7 +47,7 @@ We run:
 sac split-concat-wav -i path/to/labels-wavs.txt -o output
 ```
 
-If our label files looks like the following:
+If our label files look like the following:
 
 ```
 25.407824	27.037760	v
