@@ -36,7 +36,7 @@ def main():
     split_concat_wav_parser = subparsers.add_parser('split-concat-wav', help='Splits and combines multiple wav files.')
     split_concat_wav_parser.add_argument('-i', '--files-labels-list', dest='files_labels_list_file', required=True,
                                          help='A list of comma separated <labels-file>,<wav-file> pairs that will be '
-                                              'used as input. Absolute paths required')
+                                              'used as input. Relative to this file.')
     split_concat_wav_parser.add_argument('-o', '--output-dir', dest='output_dir', required=True,
                                          help='The output directory.')
 

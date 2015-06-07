@@ -34,10 +34,11 @@ optional arguments:
 ## Example
 
 Lets suppose that we have the following `labels-wavs.txt` file and we want to generate the concatenated wav files under the `output` dir.
+The contents of the `labels-wavs.txt` should be relative to itself.
 
 ```
-/absolute/path/to/audio_1.labels.txt,/absolute/path/to/audio_1.wav
-/absolute/path/to/audio_2.labels.txt,/absolute/path/to/audio_2.wav
+audio_1.labels.txt,audio_1.wav
+audio_2.labels.txt,audio_2.wav
 ```
 
 We run:

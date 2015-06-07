@@ -43,6 +43,9 @@ def combine_audio_segments(input_dir, output_dir):
 
 
 def split_concat(files_labels_list_file, output_dir):
+    files_labels_list_file = os.path.abspath(files_labels_list_file)
+    files_labels_list_dir = os.path.split(files_labels_list_file)[0]
+
     with open(files_labels_list_file, 'rb') as f:
         files_labels_list = f.readlines()
 
@@ -50,8 +53,10 @@ def split_concat(files_labels_list_file, output_dir):
 
     for file_label_pair in files_labels_list:
         label_file, audio_file = file_label_pair.decode("utf-8").strip().split(",")
-        print("%s :: %s" % (label_file, audio_file))
-        create_audio_segments(label_file, audio_file, temp_dir.name, remove=False)
+        label_file_abs = os.path.join(files_labels_list_dir, label_file)
+        audio_file_abs = os.path.join(files_labels_list_dir, audio_file)
+        print("%s :: %s" % (label_file_abs, audio_file_abs))
+        create_audio_segments(label_file_abs, audio_file_abs, temp_dir.name, remove=False)
 
     combine_audio_segments(temp_dir.name, output_dir)
 
