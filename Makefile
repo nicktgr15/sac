@@ -1,5 +1,5 @@
 clean:
-	rm -rf dist sac.egg-info
+	rm -rf dist sac.egg-info build
 
 register-upload-test: clean
 	python setup.py register sdist upload -r pypitest
