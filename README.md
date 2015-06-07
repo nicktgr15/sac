@@ -1,14 +1,13 @@
 # SAC (Semantic Audio Companion)
 
-Sac is a python command line tool based on (Sox)[http://sox.sourceforge.net/] which splits wave files using time boundaries
-defined in a labels file and afterwards concatenates them according to their class identifier.
+Sac is a python command line tool based on [Sox](http://sox.sourceforge.net/) which splits wave files using time boundaries
+defined in a labels file and afterwards concatenates them according to their class identifiers.
 
 ## Installation
 
-- Install (Python)[https://www.python.org/downloads/] 
-- Install (Sox)[http://sox.sourceforge.net/]
-- Install Sac
--- ```pip install sac```
+- Install [Python](https://www.python.org/downloads/)
+- Install [Sox](http://sox.sourceforge.net/)
+- Install Sac `pip install sac`
 
 To verify that you have a working sac installation do:
 
@@ -47,7 +46,7 @@ We run:
 sac split-concat-wav -i path/to/labels-wavs.txt -o output
 ```
 
-If our label files look like the following:
+If our label files looks like the following:
 
 ```
 25.407824	27.037760	v
@@ -58,7 +57,7 @@ If our label files look like the following:
 116.013084	118.601806	v
 ```
 
-The we expect the `output` directory to contain the following files:
+Then we expect the `output` directory to contain the following files:
 
 ```
 concat_m.wav    
