@@ -12,12 +12,12 @@ setup(
         'sac.cli',
         'sac.util'
     ],
-    version='0.2.0',
+    version='0.2.1',
     description='Semantic Audio Companion',
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',
     url='https://github.com/nicktgr15/sac',
-    download_url='https://github.com/nicktgr15/sac/releases/tag/0.2.0',
+    download_url='https://github.com/nicktgr15/sac/releases/tag/0.2.1',
     keywords=['semantic', 'audio', 'sox'],
     classifiers=[],
 )
