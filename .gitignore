@@ -2,3 +2,6 @@ dist/
 sac.egg-info/
 *.pyc
 build/
+venv/
+.coverage
+coverage.xml
