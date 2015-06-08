@@ -39,18 +39,31 @@ def get_sample_rate(input_wav):
     wave_file = wave.open(input_wav, 'r')
     return wave_file.getframerate()
 
+
 def parse_yaafe_header(csv_file):
     header = {}
+    header_lines = []
     with open(csv_file, 'r') as csv_file:
-        lines = csv_file.readlines(5)
-    for line in lines:
+        for i in range(0, 6):
+            l = csv_file.readline()
+            if l[0] == "%":
+                header_lines.append(l.strip())
+
+    for line in header_lines:
         if 'samplerate' in line:
             header['samplerate'] = int(re.search('.*samplerate=(\d+).*', line).group(1))
         if 'yaafedefinition' in line:
-            yaafedefinition = re.search('.*yaafedefinition=(\d+).*', line).group(1).split('>')
+            yaafedefinition = re.search('.*yaafedefinition=(.*)', line).group(1).split('>')
+            base_conf = yaafedefinition[0].strip()
+            base_step_size = int(re.search('.*stepSize=(\d+).*', line).group(1))
 
+            if len(yaafedefinition) > 1:
+                for i in range(1, len(yaafedefinition)):
+                    step_nb_frames = int(re.search('.*StepNbFrames=(\d+).*', line).group(1))
+                    base_step_size *= step_nb_frames
+            header['effective_step_size'] = base_step_size
 
-
+    return header
 
 
 def load_yaafe_csv(csv_file):
