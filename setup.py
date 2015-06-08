@@ -20,4 +20,5 @@ setup(
     download_url='https://github.com/nicktgr15/sac/releases/tag/0.2.2',
     keywords=['semantic', 'audio', 'sox'],
     classifiers=[],
+    requires=['matplotlib', 'numpy']
 )

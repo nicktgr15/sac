@@ -7,7 +7,17 @@ import uuid
 
 def create_audio_segment(start_time, end_time, input_wav, output_wav):
     duration = str(float(end_time) - float(start_time))
-    subprocess.check_call(["sox", input_wav, output_wav, "trim", start_time, duration])
+
+    temp_wav = tempfile.NamedTemporaryFile(suffix=".wav")
+
+    subprocess.check_call(["sox", input_wav, temp_wav.name, "trim", start_time, duration])
+
+    # p = subprocess.Popen(["sox", temp_wav.name, "-n", "stat", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # p.wait()
+    # volume = p.communicate()[1].strip()
+    subprocess.check_call(["sox", temp_wav.name, output_wav, "gain", "-n"])
+    # subprocess.check_call(["sox", temp_wav.name, output_wav, "compand", "0.3,1", "6:−70,−60,−20", "−5", "-90", "0.2"], shell=True)
+    temp_wav.close()
 
 def create_audio_segments(labels, input_wav, output_dir, remove=True):
     if remove:
