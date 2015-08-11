@@ -2,7 +2,7 @@
 % resample=no
 % samplerate=22050
 % version=0.65
-% yaafedefinition=SpectralFlatness stepSize=512 blockSize=1024 > StatisticalIntegrator NbFrames=60 StepNbFrames=30
+% yaafedefinition=SpectralFlatness stepSize=512 blockSize=1024 > Derivate DOrder=1
 2.630446e-01,2.658390e-01
 5.047501e-01,5.386528e-02
 4.718014e-01,4.536446e-02

@@ -1,6 +1,5 @@
 import argparse
-import sac.cli.wav_editor as wav_editor
-import sac.cli.visualiser as visualiser
+from sac.cli.wav_editor import WavEditor
 import sys
 
 
@@ -41,19 +40,12 @@ def main():
     split_concat_wav_parser.add_argument('-o', '--output-dir', dest='output_dir', required=True,
                                          help='The output directory.')
 
-    #visualise waveform with features
-    visualise_parser = subparsers.add_parser('visualise', help='Visualise waveforms and audio features')
-    visualise_parser.add_argument('-i', '--input-wav', dest='input_wav', required=True, help='Input wave file')
-    visualise_parser.add_argument('-f', '--features-csv-file', dest='features_csv_file', required=True,
-                                  help='yaafe features csv file')
 
     args = parser.parse_args()
 
     if args.command == "split-wav":
-        wav_editor.create_audio_segments(args.labels, args.input_wav, args.output_dir)
+        WavEditor.create_audio_segments(args.labels, args.input_wav, args.output_dir)
     elif args.command == "concat-wav":
-        wav_editor.combine_audio_segments(args.input_dir, args.output_dir)
+        WavEditor.combine_audio_segments(args.input_dir, args.output_dir)
     elif args.command == "split-concat-wav":
-        wav_editor.split_concat(args.files_labels_list_file, args.output_dir)
-    elif args.command == "visualise":
-        visualiser.visualise(args.input_wav, args.features_csv_file)
+        WavEditor.split_concat(args.files_labels_list_file, args.output_dir)

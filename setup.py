@@ -9,8 +9,7 @@ setup(
     name='sac',
     packages=[
         'sac',
-        'sac.cli',
-        'sac.util'
+        'sac.cli'
     ],
     version='0.2.2',
     description='Semantic Audio Companion',

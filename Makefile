@@ -18,8 +18,12 @@ create_venv: venv
 	. venv/bin/activate && pip install -r requirements.txt
 
 test:
-	. venv/bin/activate; nosetests -v --with-xcoverage --cover-package=sac --nocapture
+	-rm .coverage coverage.xml
+	. venv/bin/activate; nosetests test/* -v --with-xcoverage --cover-package=sac --nocapture
 
 install:
 	python setup.py install
 	rm -rf dist sac.egg-info build
+
+build: test
+	python setup.py sdist
