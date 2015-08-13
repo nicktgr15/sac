@@ -23,6 +23,7 @@ def main():
     split_wav_parser.add_argument('-i', '--input-wav', dest='input_wav', required=True,
                                   help='The input wave file. Split wave files will use the same encoding.')
     split_wav_parser.add_argument('-o', '--output-dir', dest='output_dir', required=True, help='The output directory.')
+    split_wav_parser.add_argument('-d', '--delimiter', dest='delimiter', help='Labels parser delimiter', default="\t")
 
     # concat-wav command parser
     concat_wav_parser = subparsers.add_parser('concat-wav', help='Combines wav files generated using the '
@@ -39,13 +40,14 @@ def main():
                                               'used as input. Relative to this file.')
     split_concat_wav_parser.add_argument('-o', '--output-dir', dest='output_dir', required=True,
                                          help='The output directory.')
-
+    split_concat_wav_parser.add_argument('-d', '--delimiter', dest='delimiter', help='Labels parser delimiter',
+                                         default="\t")
 
     args = parser.parse_args()
 
     if args.command == "split-wav":
-        WavEditor.create_audio_segments(args.labels, args.input_wav, args.output_dir)
+        WavEditor.create_audio_segments(args.labels, args.input_wav, args.output_dir, args.delimiter)
     elif args.command == "concat-wav":
         WavEditor.combine_audio_segments(args.input_dir, args.output_dir)
     elif args.command == "split-concat-wav":
-        WavEditor.split_concat(args.files_labels_list_file, args.output_dir)
+        WavEditor.split_concat(args.files_labels_list_file, args.output_dir, args.delimiter)

@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import csv
 import tempfile
@@ -14,11 +15,11 @@ class WavEditor(object):
         subprocess.check_call(["sox", input_wav, output_wav, "trim", start_time, duration])
 
     @staticmethod
-    def create_audio_segments(labels, input_wav, output_dir, clear_output_dir):
+    def create_audio_segments(labels, input_wav, output_dir, clear_output_dir, delimiter):
         if clear_output_dir:
             Util.remove_dir(output_dir)
         Util.make_dir(output_dir)
-        for k, row in enumerate(WavEditor.get_rows(labels)):
+        for k, row in enumerate(WavEditor.get_rows(labels, delimiter)):
             start_time = row[0]
             end_time = row[1]
             label = row[2]
@@ -26,20 +27,18 @@ class WavEditor(object):
             WavEditor.create_audio_segment(start_time, end_time, input_wav,
                                            os.path.join(output_dir, "%s_%s.wav" % (filename, label)))
 
+
     @staticmethod
-    def get_rows(filename):
+    def get_rows(filename, delimiter):
         rows = []
         with open(filename, 'r') as csv_file:
-            reader = csv.reader(csv_file, delimiter='\t')
+            reader = csv.reader(csv_file, delimiter=delimiter)
             for row in reader:
                 rows.append(row)
         return rows
 
     @staticmethod
-    def combine_audio_segments(input_dir, output_name, output_dir, clear_output_dir):
-        if clear_output_dir:
-            Util.remove_dir(output_dir)
-        Util.make_dir(output_dir)
+    def get_files_grouped_by_class(input_dir):
         input_dir = os.path.abspath(input_dir)
         files = os.listdir(input_dir)
         files_grouped_by_class = {}
@@ -50,6 +49,15 @@ class WavEditor(object):
                 files_grouped_by_class[file_class] = []
             files_grouped_by_class[file_class].append(os.path.join(input_dir, file))
 
+        return files_grouped_by_class
+
+    @staticmethod
+    def combine_audio_segments(input_dir, output_name, output_dir, clear_output_dir):
+        if clear_output_dir:
+            Util.remove_dir(output_dir)
+        Util.make_dir(output_dir)
+        files_grouped_by_class = WavEditor.get_files_grouped_by_class(input_dir)
+
         for class_name in files_grouped_by_class:
             input_wavs = []
             for k, file in enumerate(files_grouped_by_class[class_name]):
@@ -58,7 +66,7 @@ class WavEditor(object):
             subprocess.check_call(cmd)
 
     @staticmethod
-    def split_concat(files_labels_list_file, output_name, output_dir, clear_output_dir, normalise):
+    def split_concat(files_labels_list_file, output_name, output_dir, clear_output_dir, delimiter):
         files_labels_list_file = os.path.abspath(files_labels_list_file)
         files_labels_list_dir = os.path.split(files_labels_list_file)[0]
 
@@ -72,7 +80,7 @@ class WavEditor(object):
             label_file_abs = os.path.join(files_labels_list_dir, label_file)
             audio_file_abs = os.path.join(files_labels_list_dir, audio_file)
             print("%s :: %s" % (label_file_abs, audio_file_abs))
-            WavEditor.create_audio_segments(label_file_abs, audio_file_abs, temp_dir.name, clear_output_dir, normalise)
+            WavEditor.create_audio_segments(label_file_abs, audio_file_abs, temp_dir.name, clear_output_dir, delimiter)
 
         WavEditor.combine_audio_segments(temp_dir.name, output_name, output_dir, clear_output_dir)
 
