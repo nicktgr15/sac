@@ -10,19 +10,44 @@ class TestWavEditor(TestCase):
     @patch('sac.cli.wav_editor.Util')
     @patch('sac.cli.wav_editor.WavEditor.get_rows')
     @patch('sac.cli.wav_editor.WavEditor.create_audio_segment')
-    def test_create_audio_segments(self, mocked_create_audio_segment, mocked_get_rows, mocked_util):
+    def test_create_audio_segments_f1(self, mocked_create_audio_segment, mocked_get_rows, mocked_util):
 
         mocked_get_rows.return_value = [
-            ["0.01", "2.10", "m"],
-            ["2.20", "3.14", "v"]
+            ["1.00", "2.00", "m"],
+            ["2.50", "3.00", "v"]
         ]
 
-        WavEditor.create_audio_segments("labels_file", "input_wav", "output_dir", False, "\t")
+        WavEditor.create_audio_segments("labels_file", "input_wav", "output_dir", False, "\t", "f1")
 
         self.assertEquals(0, mocked_util.remove_dir.call_count)
         self.assertEquals(1, mocked_util.make_dir.call_count)
         self.assertEquals(1, mocked_get_rows.call_count)
         self.assertEquals(2, mocked_create_audio_segment.call_count)
+        self.assertEquals('1.00', mocked_create_audio_segment.call_args_list[0][0][0])
+        self.assertEquals('2.00', mocked_create_audio_segment.call_args_list[0][0][1])
+        self.assertEquals('2.50', mocked_create_audio_segment.call_args_list[1][0][0])
+        self.assertEquals('3.00', mocked_create_audio_segment.call_args_list[1][0][1])
+
+    @patch('sac.cli.wav_editor.Util')
+    @patch('sac.cli.wav_editor.WavEditor.get_rows')
+    @patch('sac.cli.wav_editor.WavEditor.create_audio_segment')
+    def test_create_audio_segments_f2(self, mocked_create_audio_segment, mocked_get_rows, mocked_util):
+
+        mocked_get_rows.return_value = [
+            ["1.00", "2.00", "m"],
+            ["2.50", "3.00", "v"]
+        ]
+
+        WavEditor.create_audio_segments("labels_file", "input_wav", "output_dir", False, "\t", "f2")
+
+        self.assertEquals(0, mocked_util.remove_dir.call_count)
+        self.assertEquals(1, mocked_util.make_dir.call_count)
+        self.assertEquals(1, mocked_get_rows.call_count)
+        self.assertEquals(2, mocked_create_audio_segment.call_count)
+        self.assertEquals('1.00', mocked_create_audio_segment.call_args_list[0][0][0])
+        self.assertEquals('3.0', mocked_create_audio_segment.call_args_list[0][0][1])
+        self.assertEquals('2.50', mocked_create_audio_segment.call_args_list[1][0][0])
+        self.assertEquals('5.5', mocked_create_audio_segment.call_args_list[1][0][1])
 
     @patch('sac.cli.wav_editor.subprocess')
     def test_create_audio_segment(self, mocked_subprocess):

@@ -1,8 +1,10 @@
 import logging
+import shutil
 import subprocess
 import csv
 import tempfile
 import uuid
+import sys
 
 import os
 from sac.util import Util
@@ -15,13 +17,21 @@ class WavEditor(object):
         subprocess.check_call(["sox", input_wav, output_wav, "trim", start_time, duration])
 
     @staticmethod
-    def create_audio_segments(labels, input_wav, output_dir, clear_output_dir, delimiter):
+    def create_audio_segments(labels, input_wav, output_dir, clear_output_dir, delimiter, format):
         if clear_output_dir:
             Util.remove_dir(output_dir)
         Util.make_dir(output_dir)
         for k, row in enumerate(WavEditor.get_rows(labels, delimiter)):
-            start_time = row[0]
-            end_time = row[1]
+            if format == "f1":
+                start_time = row[0]
+                end_time = row[1]
+            elif format == "f2":
+                start_time = row[0]
+                end_time = str(float(row[0]) + float(row[1]))
+            else:
+                logging.error("not supported file format")
+                sys.exit(1)
+
             label = row[2]
             filename = str(uuid.uuid4())
             WavEditor.create_audio_segment(start_time, end_time, input_wav,
@@ -66,22 +76,24 @@ class WavEditor(object):
             subprocess.check_call(cmd)
 
     @staticmethod
-    def split_concat(files_labels_list_file, output_name, output_dir, clear_output_dir, delimiter):
+    def split_concat(files_labels_list_file, output_name, output_dir, clear_output_dir, delimiter, format):
         files_labels_list_file = os.path.abspath(files_labels_list_file)
         files_labels_list_dir = os.path.split(files_labels_list_file)[0]
 
         with open(files_labels_list_file, 'rb') as f:
             files_labels_list = f.readlines()
 
-        temp_dir = tempfile.TemporaryDirectory()
+        temp_dir = tempfile.mkdtemp()
 
         for file_label_pair in files_labels_list:
             label_file, audio_file = file_label_pair.decode("utf-8").strip().split(",")
             label_file_abs = os.path.join(files_labels_list_dir, label_file)
             audio_file_abs = os.path.join(files_labels_list_dir, audio_file)
             print("%s :: %s" % (label_file_abs, audio_file_abs))
-            WavEditor.create_audio_segments(label_file_abs, audio_file_abs, temp_dir.name, clear_output_dir, delimiter)
+            WavEditor.create_audio_segments(label_file_abs, audio_file_abs, temp_dir, clear_output_dir, delimiter,
+                                            format)
 
-        WavEditor.combine_audio_segments(temp_dir.name, output_name, output_dir, clear_output_dir)
+        WavEditor.combine_audio_segments(temp_dir, output_name, output_dir, clear_output_dir)
 
-        temp_dir.cleanup()
+        # temp_dir.cleanup()
+        shutil.rmtree(temp_dir)

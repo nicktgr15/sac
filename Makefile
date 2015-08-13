@@ -25,5 +25,10 @@ install:
 	python setup.py install
 	rm -rf dist sac.egg-info build
 
-build: test
+build: clean test
 	python setup.py sdist
+
+build-install: clean test
+	python setup.py sdist
+	-pip uninstall sac -y
+	pip install dist/sac*
