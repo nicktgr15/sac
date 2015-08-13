@@ -3,3 +3,4 @@ numpy
 nose
 nosexcover
 testfixtures
+mock

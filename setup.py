@@ -9,10 +9,9 @@ setup(
     name='sac',
     packages=[
         'sac',
-        'sac.cli',
-        'sac.util'
+        'sac.cli'
     ],
-    version='0.2.2',
+    version='0.3.0',
     description='Semantic Audio Companion',
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',

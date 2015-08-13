@@ -5,3 +5,5 @@ build/
 venv/
 .coverage
 coverage.xml
+.idea
+*.iml
