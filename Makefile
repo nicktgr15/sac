@@ -3,10 +3,10 @@
 clean:
 	rm -rf dist sac.egg-info build
 
-register-upload-test: clean
+register-upload-test: clean test
 	python setup.py register sdist upload -r pypitest
 
-register-upload-live: clean
+register-upload-live: clean test
 	python setup.py register sdist upload -r pypi
 
 venv:
