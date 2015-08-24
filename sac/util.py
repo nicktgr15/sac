@@ -7,6 +7,7 @@ import wave
 import os
 import re
 import numpy as np
+import itertools
 
 
 class Util(object):
@@ -41,27 +42,13 @@ class Util(object):
     @staticmethod
     def generate_labels_from_classifications(classifications, timestamps):
         window_length = timestamps[1] - timestamps[0]
-        chunks = []
-        previous = classifications[0]
-        previous_position = 0
-        for k, classification in enumerate(classifications):
-            if classification != previous:
-                chunks.append({
-                    "classifications": classifications[previous_position:k],
-                    "time-range": timestamps[previous_position:k]
-                })
-                previous_position = k
-                previous = classification
-            if k == len(classifications) - 1:
-                chunks.append({
-                    "classifications": classifications[previous_position:k + 1],
-                    "time-range": timestamps[previous_position:k + 1]
-                })
+        combo_list = [(classifications[k], timestamps[k]) for k in range(0, len(classifications))]
         labels = []
-        for chunk in chunks:
-            start_time = chunk["time-range"][0]
-            end_time = chunk["time-range"][-1] + window_length
-            label_class = chunk["classifications"][0]
+        for k, g in itertools.groupby(combo_list, lambda x: x[0]):
+            items = list(g)
+            start_time = items[0][1]
+            end_time = items[-1][1] + window_length
+            label_class = items[0][0]
             labels.append([start_time, end_time, label_class])
         return labels
 
@@ -105,8 +92,8 @@ class Util(object):
 
     @staticmethod
     def read_downsampled_wav(input_wav):
-        downsampled_wav = downsample(input_wav)
-        timestamps, samples = read_wav_file(downsampled_wav.name)
+        downsampled_wav = Util.downsample(input_wav)
+        timestamps, samples = Util.read_wav_file(downsampled_wav.name)
         downsampled_wav.close()
         return timestamps, samples
 
@@ -162,7 +149,7 @@ class Util(object):
     def read_merged_features(audio_file, features):
         feature_list = []
         for feature in features:
-            timestamps, feature_vectors = load_yaafe_csv("%s.%s.csv" % (audio_file, feature))
+            timestamps, feature_vectors = Util.load_yaafe_csv("%s.%s.csv" % (audio_file, feature))
             feature_list.append(feature_vectors)
 
         return timestamps, np.hstack((i for i in feature_list))
@@ -184,7 +171,7 @@ class Util(object):
             class_id = file.split("_")[-1].split(".")[0]
             if not class_id in classes:
                 classes.append(class_id)
-            timestamps, x = read_merged_features(file, features)
+            timestamps, x = Util.read_merged_features(file, features)
             y = [classes.index(class_id) for i in x]
             data.append({
                 "x": x,
@@ -198,3 +185,14 @@ class Util(object):
             return X, Y, classes
         else:
             return X[:, selected_features], Y, classes
+
+    @staticmethod
+    def write_audacity_labels(labels, filename):
+        """
+
+        :param labels: list containing labels in the following format [start, end, class]
+        :return:
+        """
+        with open(filename, "wb") as f:
+            for label in labels:
+                f.write("%s\t%s\t%s\n" % (label[0], label[1], label[2]))
