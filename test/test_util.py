@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 from sac.util import Util
-
+import numpy as np
 
 class UtilTests(TestCase):
     def setUp(self):
@@ -76,3 +76,18 @@ class UtilTests(TestCase):
 
         self.assertAlmostEqual(0.5833333333333334, percentages[0])
         self.assertAlmostEqual(0.4166666666666667, percentages[1])
+
+    def test_get_annotated_data(self):
+        timestamps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        data = np.random.rand(7, 10)
+        labels = [
+            [1.2, 2.5, 'm'],
+            [4.5, 6.0, 's']
+        ]
+
+        annotated_data = Util.get_annotated_data(timestamps, data, labels)
+        self.assertTrue("m" in annotated_data)
+        self.assertTrue("s" in annotated_data)
+        self.assertTrue(data[2,:] in annotated_data["m"])
+        self.assertTrue(data[5,:] in annotated_data["s"])
+        self.assertTrue(data[6,:] in annotated_data["s"])

@@ -11,6 +11,27 @@ import itertools
 
 
 class Util(object):
+
+    @staticmethod
+    def get_annotated_data(timestamps, data, lbls):
+        timestamps = np.array(timestamps)
+
+        annotated_data = {}
+
+        for lbl in lbls:
+            start = float(lbl[0])
+            end = float(lbl[1])
+            l_class = lbl[2]
+
+            indices = np.where(np.logical_and(timestamps >= start, timestamps <= end))[0]
+
+            if not l_class in annotated_data:
+                annotated_data[l_class] = data[indices, :]
+            else:
+                annotated_data[l_class] = np.vstack((annotated_data[l_class], data[indices, :]))
+
+        return annotated_data
+
     @staticmethod
     def remove_dir(directory):
         if os.path.exists(directory):
