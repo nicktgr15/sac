@@ -19,7 +19,7 @@ create_venv: venv
 
 test:
 	-rm .coverage coverage.xml
-	. venv/bin/activate; nosetests test/* -v --with-xcoverage --cover-package=sac --nocapture
+	. venv/bin/activate; nosetests test/* -v --cover-inclusive --with-xcoverage --cover-package=sac --nocapture
 
 install:
 	python setup.py install

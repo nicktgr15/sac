@@ -1,3 +1,4 @@
+import csv
 import shutil
 import struct
 import subprocess
@@ -8,6 +9,7 @@ import os
 import re
 import numpy as np
 import itertools
+from model.audacity_label import AudacityLabel
 
 
 class Util(object):
@@ -19,9 +21,9 @@ class Util(object):
         annotated_data = {}
 
         for lbl in lbls:
-            start = float(lbl[0])
-            end = float(lbl[1])
-            l_class = lbl[2]
+            start = lbl.start_seconds
+            end = lbl.end_seconds
+            l_class = lbl.label
 
             indices = np.where(np.logical_and(timestamps >= start, timestamps <= end))[0]
 
@@ -62,6 +64,12 @@ class Util(object):
 
     @staticmethod
     def generate_labels_from_classifications(classifications, timestamps):
+        """
+        This is to generate continuous segments out of classified small windows
+        :param classifications:
+        :param timestamps:
+        :return:
+        """
         window_length = timestamps[1] - timestamps[0]
         combo_list = [(classifications[k], timestamps[k]) for k in range(0, len(classifications))]
         labels = []
@@ -70,7 +78,7 @@ class Util(object):
             start_time = items[0][1]
             end_time = items[-1][1] + window_length
             label_class = items[0][0]
-            labels.append([start_time, end_time, label_class])
+            labels.append(AudacityLabel(start_time, end_time, label_class))
         return labels
 
     @staticmethod
@@ -208,12 +216,33 @@ class Util(object):
             return X[:, selected_features], Y, classes
 
     @staticmethod
-    def write_audacity_labels(labels, filename):
-        """
+    def read_audacity_labels(labels_file):
+        audacity_labels = []
+        with open(labels_file, 'rb') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter='\t')
+            for row in csv_reader:
+                audacity_labels.append(AudacityLabel(row[0], row[1], row[2]))
+        return audacity_labels
 
-        :param labels: list containing labels in the following format [start, end, class]
+    @staticmethod
+    def write_audacity_labels(audacity_labels, filename):
+        """
+        :param audacity_labels: list containing audacity label objects
         :return:
         """
         with open(filename, "wb") as f:
-            for label in labels:
-                f.write("%s\t%s\t%s\n" % (label[0], label[1], label[2]))
+            for label in audacity_labels:
+                f.write("%s\t%s\t%s\n" % (label.start_seconds, label.end_seconds, label.label))
+
+    @staticmethod
+    def read_feature_names_from_file(feature_plan):
+        with open(feature_plan, "rb") as f:
+            lines = f.readlines()
+
+        features = []
+        for line in lines:
+            if line[0] != "#":
+                features.append(line.split(":")[0])
+
+        return features
+

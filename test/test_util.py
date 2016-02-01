@@ -1,7 +1,10 @@
 import os
 from unittest import TestCase
+
+from sac.model.audacity_label import AudacityLabel
 from sac.util import Util
 import numpy as np
+
 
 class UtilTests(TestCase):
     def setUp(self):
@@ -63,10 +66,14 @@ class UtilTests(TestCase):
                       13.235374149659863, 13.931972789115646, 14.628571428571428, 15.32517006802721, 16.021768707482995]
 
         labels = Util.generate_labels_from_classifications(classifications, timestamps)
-        expected_labels = [[0.0, 1.3931972789115645, 1], [1.3931972789115645, 9.752380952380953, 0],
-                           [9.752380952380953, 10.448979591836736, 1], [10.448979591836734, 11.145578231292516, 0],
-                           [11.145578231292516, 12.538775510204081, 1], [12.538775510204081, 13.235374149659863, 0],
-                           [13.235374149659863, 16.718367346938777, 1]]
+
+        expected_labels = [AudacityLabel(0.0, 1.3931972789115645, 1),
+                           AudacityLabel(1.3931972789115645, 9.752380952380953, 0),
+                           AudacityLabel(9.752380952380953, 10.448979591836736, 1),
+                           AudacityLabel(10.448979591836734, 11.145578231292516, 0),
+                           AudacityLabel(11.145578231292516, 12.538775510204081, 1),
+                           AudacityLabel(12.538775510204081, 13.235374149659863, 0),
+                           AudacityLabel(13.235374149659863, 16.718367346938777, 1)]
 
         self.assertListEqual(expected_labels, labels)
 
@@ -81,13 +88,14 @@ class UtilTests(TestCase):
         timestamps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
         data = np.random.rand(7, 10)
         labels = [
-            [1.2, 2.5, 'm'],
-            [4.5, 6.0, 's']
+            AudacityLabel(1.2, 2.5, "m"),
+            AudacityLabel(4.5, 6.0, "s")
         ]
 
         annotated_data = Util.get_annotated_data(timestamps, data, labels)
+        print annotated_data
         self.assertTrue("m" in annotated_data)
         self.assertTrue("s" in annotated_data)
-        self.assertTrue(data[2,:] in annotated_data["m"])
-        self.assertTrue(data[5,:] in annotated_data["s"])
-        self.assertTrue(data[6,:] in annotated_data["s"])
+        self.assertTrue(data[2, :] in annotated_data["m"])
+        self.assertTrue(data[5, :] in annotated_data["s"])
+        self.assertTrue(data[6, :] in annotated_data["s"])
