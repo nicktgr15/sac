@@ -17,7 +17,7 @@ setup(
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',
     url='https://github.com/nicktgr15/sac',
-    download_url='https://github.com/nicktgr15/sac/releases/tag/0.3.2',
+    download_url='https://github.com/nicktgr15/sac/releases/tag/0.3.3',
     keywords=['semantic', 'audio', 'sox'],
     classifiers=[],
     install_requires=['matplotlib', 'numpy']
