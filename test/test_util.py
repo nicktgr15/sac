@@ -99,3 +99,17 @@ class UtilTests(TestCase):
         self.assertTrue(data[2, :] in annotated_data["m"])
         self.assertTrue(data[5, :] in annotated_data["s"])
         self.assertTrue(data[6, :] in annotated_data["s"])
+
+    def test_split_data_based_on_annotation(self):
+        X = np.array([
+            [1,2,3,4],
+            [2,3,4,5],
+            [4,5,6,7]
+        ])
+        Y = [0,0,1]
+        classes = ["music", "speech"]
+
+        data = Util.split_data_based_on_annotation(X, Y, classes)
+
+        self.assertEqual(data["music"].shape[0], 2)
+        self.assertEqual(data["speech"].shape[0], 1)

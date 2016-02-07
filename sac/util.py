@@ -15,6 +15,21 @@ from model.audacity_label import AudacityLabel
 class Util(object):
 
     @staticmethod
+    def split_data_based_on_annotation(X, Y, classes):
+        data = {}
+        for c in classes:
+            data[c] = []
+
+        for k, x in enumerate(X):
+            sample_class = classes[Y[k]]
+            data[sample_class].append(x.tolist())
+
+        for c in classes:
+            data[c] = np.array(data[c])
+
+        return data
+
+    @staticmethod
     def get_annotated_data(timestamps, data, lbls):
         timestamps = np.array(timestamps)
 
