@@ -12,13 +12,13 @@ setup(
         'sac.cli',
         'sac.model'
     ],
-    version='0.3.4',
+    version='0.4.0',
     description='Semantic Audio Companion',
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',
     url='https://github.com/nicktgr15/sac',
-    download_url='https://github.com/nicktgr15/sac/releases/tag/0.3.4',
+    download_url='https://github.com/nicktgr15/sac/releases/tag/0.4.0',
     keywords=['semantic', 'audio', 'sox'],
     classifiers=[],
-    install_requires=['matplotlib', 'numpy']
+    install_requires=['matplotlib', 'numpy', 'scipy']
 )
