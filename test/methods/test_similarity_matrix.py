@@ -40,21 +40,45 @@ class TestSimilarityMatrix(TestCase):
     def test_calculate_segment_start_end_times_from_peak_positions(self):
         # when
         peaks = [0, 10, 30, 44, 50]
-        samping_rate = 22050
+        timestamps = [0, 1, 2]
 
         # then
         expected_segments = [
-            [0.0, 0.00045351473922902497],
-            [0.00045351473922902497, 0.001360544217687075],
-            [0.001360544217687075, 0.00199546485260771],
-            [0.00199546485260771, 0.0022675736961451248]
+            [0.0, 10.0],
+            [10.0, 30.0],
+            [30.0, 44.0],
+            [44.0, 50.0]
         ]
 
-        segments = self_similarity.calculate_segment_start_end_times_from_peak_positions(peaks, samping_rate)
+        segments = self_similarity.calculate_segment_start_end_times_from_peak_positions(peaks, timestamps)
         self.assertListEqual(expected_segments, segments)
 
     def test_get_window_in_seconds(self):
-        self.assertAlmostEqual(0.00004535147392, self_similarity.get_window_in_seconds(22050))
+        self.assertAlmostEqual(1, self_similarity.get_window_in_seconds([0,1,2,3]))
+
+    def test_end_to_end(self):
+        X = np.array([
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [0, 0, 0],
+            [0, 0, 0],
+            [1, 1, 1],
+            [1, 1, 1],
+            [2, 2, 2],
+            [2, 2, 2],
+            [0, 0, 0],
+            [0, 0, 0],
+            [2, 2, 2],
+            [2, 2, 2]
+        ])
+        timestamps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+        expected_segments = [[0, 4], [4, 5], [5, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 13]]
+        segments = self_similarity.get_segments(X, timestamps, 2, 5, 1, False)
+
+        self.assertListEqual(expected_segments, segments)
 
     def test_checkerboard_matrix_filtering(self):
 

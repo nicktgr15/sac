@@ -83,9 +83,8 @@ def checkerboard_matrix_filtering(similarity_matrix, kernel_width, peak_range):
     return peaks, convolution_values
 
 
-def calculate_segment_start_end_times_from_peak_positions(peaks, sampling_rate):
-    window_in_seconds = get_window_in_seconds(sampling_rate)
-
+def calculate_segment_start_end_times_from_peak_positions(peaks, timestamps):
+    window_in_seconds = get_window_in_seconds(timestamps)
     segments = []
     for i in range(0, len(peaks) - 1):
         segments.append([peaks[i] * window_in_seconds, peaks[i + 1] * window_in_seconds])
@@ -93,13 +92,11 @@ def calculate_segment_start_end_times_from_peak_positions(peaks, sampling_rate):
     return segments
 
 
-def get_window_in_seconds(sample_rate):
-    return 1.0 / sample_rate
+def get_window_in_seconds(timestamps):
+    return timestamps[1] - timestamps[0]
 
 
-def draw_similarity_matrix(similarity_matrix, peaks, convolution_values, image_filename, sampling_rate):
-    window_in_seconds = get_window_in_seconds(sampling_rate)
-
+def draw_similarity_matrix(similarity_matrix, peaks, convolution_values, image_filename, timestamps):
     plt.figure()
     ax1 = plt.subplot2grid((9, 1), (0, 0), rowspan=8)
     plt.imshow(similarity_matrix, cmap=plt.cm.gray)
@@ -110,11 +107,11 @@ def draw_similarity_matrix(similarity_matrix, peaks, convolution_values, image_f
 
     ticks = [i for i in range(0, len(convolution_values), int(len(convolution_values) / 7))]
 
-    plt.xticks(ticks, ["%.0f" % (t * window_in_seconds) for t in ticks])
+    plt.xticks(ticks, ["%.0f" % timestamps[t] for t in ticks])
     plt.savefig(image_filename, bbox_inches='tight')
 
 
-def get_segments(feature_vectors, sampling_rate, kernel_width, peak_range, filter_width, save_image=False,
+def get_segments(feature_vectors, timestamps, kernel_width, peak_range, filter_width, save_image=False,
                  image_filename="similarity_matrix.png", subarray_size=None):
 
     sm = calculate_similarity_matrix(feature_vectors, subarray_size)
@@ -124,9 +121,9 @@ def get_segments(feature_vectors, sampling_rate, kernel_width, peak_range, filte
     peaks, convolution_values = checkerboard_matrix_filtering(sm, kernel_width, peak_range)
 
     if save_image:
-        draw_similarity_matrix(sm, peaks, convolution_values, image_filename, sampling_rate)
+        draw_similarity_matrix(sm, peaks, convolution_values, image_filename, timestamps)
 
-    return calculate_segment_start_end_times_from_peak_positions(peaks, sampling_rate)
+    return calculate_segment_start_end_times_from_peak_positions(peaks, timestamps)
 
 
 
