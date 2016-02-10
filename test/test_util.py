@@ -93,12 +93,25 @@ class UtilTests(TestCase):
         ]
 
         annotated_data = Util.get_annotated_data(timestamps, data, labels)
-        print annotated_data
         self.assertTrue("m" in annotated_data)
         self.assertTrue("s" in annotated_data)
         self.assertTrue(data[2, :] in annotated_data["m"])
         self.assertTrue(data[5, :] in annotated_data["s"])
         self.assertTrue(data[6, :] in annotated_data["s"])
+
+    def test_get_annotated_data_x_y(self):
+        timestamps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        data = np.random.rand(7, 10)
+        labels = [
+            AudacityLabel(1.2, 2.5, "m"),
+            AudacityLabel(4.5, 6.0, "s")
+        ]
+
+        x, y, classes = Util.get_annotated_data_x_y(timestamps, data, labels)
+
+        self.assertEqual(3, x.shape[0])
+        self.assertListEqual(["m", "s", "s"], y)
+        self.assertListEqual(["m", "s"], classes)
 
     def test_split_data_based_on_annotation(self):
         X = np.array([

@@ -29,6 +29,31 @@ class Util(object):
 
         return data
 
+
+    @staticmethod
+    def get_annotated_data_x_y(timestamps, data, lbls):
+
+        timestamps = np.array(timestamps)
+
+        X = None
+        Y = []
+        classes = []
+
+        for i in range(0, len(timestamps)):
+
+            for lbl in lbls:
+                if lbl.start_seconds <= timestamps[i] <= lbl.end_seconds:
+                    if X is None:
+                        X = data[i, :]
+                    else:
+                        X = np.vstack((X, data[i, :]))
+                    Y.append(lbl.label)
+
+                    if lbl.label not in classes:
+                        classes.append(lbl.label)
+
+        return X, Y, classes
+
     @staticmethod
     def get_annotated_data(timestamps, data, lbls):
         timestamps = np.array(timestamps)
