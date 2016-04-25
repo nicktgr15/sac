@@ -77,6 +77,25 @@ class UtilTests(TestCase):
 
         self.assertListEqual(expected_labels, labels)
 
+    def test_combine_adjacent_labels_of_the_same_class(self):
+        input_labels = [
+            AudacityLabel(0, 10, "m"),
+            AudacityLabel(10, 20, "m"),
+            AudacityLabel(20, 21, "s"),
+            AudacityLabel(21, 22, "s"),
+            AudacityLabel(22, 23, "s"),
+            AudacityLabel(23, 30, "m")
+        ]
+        expected_labels = [
+            AudacityLabel(0, 20, "m"),
+            AudacityLabel(20, 23, "s"),
+            AudacityLabel(23, 30, "m"),
+        ]
+
+        actual_labels = Util.combine_adjacent_labels_of_the_same_class(input_labels)
+
+        self.assertListEqual(expected_labels, actual_labels)
+
     def test_calculate_classes_percentages(self):
         classifications = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1]
         percentages = Util.calculate_classes_percentages(classifications)

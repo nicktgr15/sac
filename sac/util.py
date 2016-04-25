@@ -122,6 +122,17 @@ class Util(object):
         return labels
 
     @staticmethod
+    def combine_adjacent_labels_of_the_same_class(input_labels):
+        labels = []
+        for k, g in itertools.groupby(input_labels, lambda x: x.label):
+            items = list(g)
+            start_time = items[0].start_seconds
+            end_time = items[-1].end_seconds
+            label_class = items[0].label
+            labels.append(AudacityLabel(start_time, end_time, label_class))
+        return labels
+
+    @staticmethod
     def downsample(input_wav):
         downsampled_wav = tempfile.NamedTemporaryFile(suffix=".wav")
         subprocess.check_call(['/usr/local/bin/sox', input_wav, '-r', '1000', downsampled_wav.name])
