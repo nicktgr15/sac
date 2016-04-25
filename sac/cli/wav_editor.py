@@ -44,7 +44,8 @@ class WavEditor(object):
         with open(filename, 'r') as csv_file:
             reader = csv.reader(csv_file, delimiter=delimiter)
             for row in reader:
-                rows.append(row)
+                if len(row) > 0:
+                    rows.append(row)
         return rows
 
     @staticmethod
