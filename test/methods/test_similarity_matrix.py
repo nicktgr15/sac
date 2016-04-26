@@ -1,6 +1,9 @@
 from unittest import TestCase
 from sac.methods import self_similarity
 import numpy as np
+import matplotlib
+matplotlib.use('TKAgg')
+import matplotlib.pyplot as plt
 
 
 class TestSimilarityMatrix(TestCase):
@@ -62,20 +65,21 @@ class TestSimilarityMatrix(TestCase):
             [1, 1, 1],
             [1, 1, 1],
             [1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0],
+            [0, 1, 0],
+            [0, 1, 0],
             [1, 1, 1],
             [1, 1, 1],
             [2, 2, 2],
             [2, 2, 2],
-            [0, 0, 0],
-            [0, 0, 0],
+            [0, 1, 0],
+            [0, 1, 0],
             [2, 2, 2],
             [2, 2, 2]
         ])
+
         timestamps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
-        expected_segments = [[0, 4], [4, 5], [5, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 13]]
+        expected_segments = [[0, 4], [4, 5], [5, 6], [6, 7], [7, 7], [7, 10], [10, 13]]
         segments = self_similarity.get_segments(X, timestamps, 2, 5, 1, False)
 
         self.assertListEqual(expected_segments, segments)
@@ -88,24 +92,28 @@ class TestSimilarityMatrix(TestCase):
             [1, 1, 1],
             [1, 1, 1],
             [1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0],
+            [0, 0.1, 0],
+            [0, 0.1, 0],
+            [0, 0.1, 0],
+            [0, 0.1, 0],
             [1, 1, 1],
             [1, 1, 1],
             [1, 1, 1],
             [1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
+            [0, 0.1, 0],
+            [0, 0.1, 0],
+            [0, 0.1, 0],
+            [0, 0.1, 0]
         ])
 
         sm = self_similarity.calculate_similarity_matrix(example_feature_vectors)
-        peaks, convolution_values = self_similarity.checkerboard_matrix_filtering(sm, kernel_width=2, peak_range=2)
 
-        self.assertListEqual([0, 4, 9, 13, 15], peaks)
-        self.assertEqual(5, len(peaks))
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111)
+        # ax.imshow(sm, cmap=plt.cm.gray)
+        # plt.show()
+
+        peaks, convolution_values = self_similarity.checkerboard_matrix_filtering(sm, kernel_width=2, peak_range=2)
+        self.assertListEqual([0, 4, 13, 15], peaks)
         self.assertTrue(0 in peaks)  # check that 0 is always added in the peaks
-        self.assertTrue((len(peaks)-1) in peaks)  # check that the last samples is always added to the peaks
+        self.assertTrue((len(sm)-1) in peaks)  # check that the last samples is always added to the peaks
