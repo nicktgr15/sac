@@ -20,7 +20,7 @@ def calculate_similarity_matrix(feature_vectors, subarray_size=None):
     sm = np.zeros((size, size))
 
     for i in range(0, size, subarray_size):
-        subarray_distances = pdist(feature_vectors[i:i + subarray_size * 2], 'euclidean')
+        subarray_distances = pdist(feature_vectors[i:i + subarray_size * 2], 'cosine')
         subarray_distances = squareform(subarray_distances)
         sm[i:i + subarray_distances.shape[0], i:i + subarray_distances.shape[0]] = subarray_distances
     return sm
