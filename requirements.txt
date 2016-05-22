@@ -5,3 +5,5 @@ nosexcover
 testfixtures
 mock
 scipy
+sympy
+peakutils
