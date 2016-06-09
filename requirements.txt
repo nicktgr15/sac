@@ -7,3 +7,4 @@ mock
 scipy
 sympy
 peakutils
+scikit-learn

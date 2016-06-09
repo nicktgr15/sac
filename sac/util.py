@@ -10,9 +10,30 @@ import re
 import numpy as np
 import itertools
 from model.audacity_label import AudacityLabel
+from sklearn.cluster import KMeans
+from sklearn.utils import shuffle
 
 
 class Util(object):
+
+    @staticmethod
+    def kmeans_image_quantisation(sm, clusters=5, random_samples=10000):
+        sm_reshaped = sm.reshape((-1, 1))
+
+        random_samples_from_image = shuffle(sm_reshaped, random_state=0)[0:20]
+
+        kmeans = KMeans(n_clusters=clusters)
+        kmeans.fit(random_samples_from_image)
+        # print kmeans.cluster_centers_
+        # print kmeans.labels_
+
+        y = kmeans.predict(sm_reshaped)
+
+        for i in range(len(y)):
+            sm_reshaped[i] = kmeans.cluster_centers_[y[i]]
+
+        image = sm_reshaped.reshape(sm.shape)
+        return image
 
     @staticmethod
     def split_data_based_on_annotation(X, Y, classes):

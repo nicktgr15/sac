@@ -1,3 +1,5 @@
+import pickle
+
 import os
 from unittest import TestCase
 
@@ -13,6 +15,12 @@ class UtilTests(TestCase):
         self.double_stats_csv = os.path.join(os.path.dirname(__file__), 'fixtures/example_yaafe_double_stats.csv')
         self.no_stats_derivate = os.path.join(os.path.dirname(__file__), 'fixtures/example_yaafe_no_stats_derivate.csv')
         self.stats_derivate = os.path.join(os.path.dirname(__file__), 'fixtures/example_yaafe_stats_derivate.csv')
+
+        with open(os.path.abspath(os.path.join(os.path.dirname(__file__), 'fixtures/sm.pickle'))) as f:
+            self.sm = pickle.load(f)
+
+        with open(os.path.abspath(os.path.join(os.path.dirname(__file__), 'fixtures/timestamps.pickle'))) as f:
+            self.timestamps = pickle.load(f)
 
     # # yaafe header parser
     def test_parse_yaafe_header_stats(self):
@@ -145,3 +153,7 @@ class UtilTests(TestCase):
 
         self.assertEqual(data["music"].shape[0], 2)
         self.assertEqual(data["speech"].shape[0], 1)
+
+    def test_kmeans_image_quantisation(self):
+        quantised_image = Util.kmeans_image_quantisation(self.sm, 5)
+        self.assertEquals(5, len(np.unique(quantised_image)))
