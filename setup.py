@@ -14,7 +14,7 @@ setup(
         'sac.methods',
         'sac.methods.sm_analysis'
     ],
-    version='0.5.1',
+    version='0.5.2',
     description='Semantic Audio Companion',
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',
