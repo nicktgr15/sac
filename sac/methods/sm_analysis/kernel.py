@@ -46,7 +46,7 @@ def get_window_in_seconds(timestamps):
     return timestamps[1] - timestamps[0]
 
 
-def get_checkerboard_matrix(kernel_width):
+def get_checkerboard_matrix(kernel_width, kernel_type="default"):
 
     """
     example matrix for width = 2
@@ -56,18 +56,40 @@ def get_checkerboard_matrix(kernel_width):
      1   1   -1  -1
      1   1   -1  -1
 
+    :param kernel_type:
     :param kernel_width:
     :return:
     """
 
-    return np.vstack((
-        np.hstack((
-            -1 * np.ones((kernel_width, kernel_width)), np.ones((kernel_width, kernel_width))
-        )),
-        np.hstack((
-            np.ones((kernel_width, kernel_width)), -1 * np.ones((kernel_width, kernel_width))
+    if kernel_type is "default":
+        return np.vstack((
+            np.hstack((
+                -1 * np.ones((kernel_width, kernel_width)), np.ones((kernel_width, kernel_width))
+            )),
+            np.hstack((
+                np.ones((kernel_width, kernel_width)), -1 * np.ones((kernel_width, kernel_width))
+            ))
         ))
-    ))
+
+    elif kernel_type is "bottom_right":
+        return np.vstack((
+            np.hstack((
+                np.ones((kernel_width, kernel_width)), np.ones((kernel_width, kernel_width))
+            )),
+            np.hstack((
+                np.ones((kernel_width, kernel_width)), -1 * np.ones((kernel_width, kernel_width))
+            ))
+        ))
+
+    elif kernel_type is "top_left":
+        return np.vstack((
+            np.hstack((
+                -1 * np.ones((kernel_width, kernel_width)), np.ones((kernel_width, kernel_width))
+            )),
+            np.hstack((
+                np.ones((kernel_width, kernel_width)), np.ones((kernel_width, kernel_width))
+            ))
+        ))
 
 
 def checkerboard_matrix_filtering(similarity_matrix, kernel_width, thresh=PEAK_THRESH):
@@ -81,7 +103,7 @@ def checkerboard_matrix_filtering(similarity_matrix, kernel_width, thresh=PEAK_T
     :return: peaks and convolution values
     """
 
-    checkerboard_matrix = get_checkerboard_matrix(kernel_width)
+    checkerboard_matrix = get_checkerboard_matrix(kernel_width, "default")
 
     # The values calculated in this step are starting from the 'kernel_width' position and ending
     # at length - kernel_width

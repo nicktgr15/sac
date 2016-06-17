@@ -12,9 +12,54 @@ import itertools
 from model.audacity_label import AudacityLabel
 from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
+import pandas as pd
 
 
 class Util(object):
+
+    @staticmethod
+    def non_maximum_suppression(peaks, values):
+
+        lbls = []
+        for k, v in enumerate(values):
+            if k in peaks:
+                lbls.append(("p", k, v))
+            else:
+                lbls.append(("n", k, v))
+
+        new_peaks = []
+
+        for k, g in itertools.groupby(lbls, lambda x: x[0]):
+            items = list(g)
+            # no peaks
+            if items[0][0] == "p":
+                if len(items) == 1:
+                    new_peaks.append(k)
+                else:
+                    group_peak_values = [item[2] for item in items]
+                    argmax = np.argmax(group_peak_values)
+                    new_peaks.append(items[argmax][1])
+
+        return new_peaks, values
+
+    @staticmethod
+    def combine_peaks(a_peaks, a_peak_values, b_peaks, b_peak_values):
+
+        new_peaks = []
+
+        for b_peak in b_peaks:
+            # check if a peak already exists in the same position.
+            # if the new peak has higher value -> update existing value
+            if b_peak in a_peaks:
+                if b_peak_values[b_peak] > a_peak_values[b_peak]:
+                    a_peak_values[b_peak] = b_peak_values[b_peak]
+            else:
+                new_peaks.append(b_peak)
+                a_peak_values[b_peak] = b_peak_values[b_peak]
+
+        a_peaks = a_peaks + new_peaks
+        a_peaks = np.sort(a_peaks)
+        return a_peaks.tolist(), a_peak_values
 
     @staticmethod
     def kmeans_image_quantisation(sm, clusters=5, random_samples=10000):
@@ -49,7 +94,6 @@ class Util(object):
             data[c] = np.array(data[c])
 
         return data
-
 
     @staticmethod
     def get_annotated_data_x_y(timestamps, data, lbls):
@@ -317,4 +361,3 @@ class Util(object):
                 features.append(line.split(":")[0])
 
         return features
-

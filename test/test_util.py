@@ -1,11 +1,10 @@
 import pickle
-
-import os
 from unittest import TestCase
 
+import numpy as np
+import os
 from sac.model.audacity_label import AudacityLabel
 from sac.util import Util
-import numpy as np
 
 
 class UtilTests(TestCase):
@@ -142,11 +141,11 @@ class UtilTests(TestCase):
 
     def test_split_data_based_on_annotation(self):
         X = np.array([
-            [1,2,3,4],
-            [2,3,4,5],
-            [4,5,6,7]
+            [1, 2, 3, 4],
+            [2, 3, 4, 5],
+            [4, 5, 6, 7]
         ])
-        Y = [0,0,1]
+        Y = [0, 0, 1]
         classes = ["music", "speech"]
 
         data = Util.split_data_based_on_annotation(X, Y, classes)
@@ -157,3 +156,23 @@ class UtilTests(TestCase):
     def test_kmeans_image_quantisation(self):
         quantised_image = Util.kmeans_image_quantisation(self.sm, 5)
         self.assertEquals(5, len(np.unique(quantised_image)))
+
+    def test_combine_peaks(self):
+
+        a_peaks = [3, 8]
+        a_peak_values = [2, 2, 2, 3, 2, 2, 2, 4, 5, 4, 2, 2, 2]
+
+        b_peaks = [6]
+        b_peak_values = [2, 2, 2, 2, 2, 2, 7, 2, 2, 2, 2, 2, 2]
+
+        p, v = Util.combine_peaks(a_peaks, a_peak_values, b_peaks, b_peak_values)
+
+        self.assertListEqual([3, 6, 8], p)
+
+    def test_non_maximum_suppression(self):
+        peaks = [2, 3, 4, 7, 8, 9]
+        values = [2, 2, 2, 3, 2, 2, 2, 4, 5, 4, 2, 2, 2]
+        p, v = Util.non_maximum_suppression(peaks, values)
+
+        self.assertListEqual([3, 8], p)
+        self.assertListEqual(values, v)
