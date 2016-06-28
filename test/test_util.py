@@ -176,3 +176,16 @@ class UtilTests(TestCase):
 
         self.assertListEqual([3, 8], p)
         self.assertListEqual(values, v)
+
+    def test_get_annotated_labels_from_predictions_and_sm_segments(self):
+
+        timestamps = [0, 1, 2, 3, 4, 5, 6]
+        segments = [
+            AudacityLabel(0, 2.5, '-'),
+            AudacityLabel(2.5, 5.5, '-')
+        ]
+        frame_level_predictions = np.array(['v', 'v', 'v', 's', 's', 'v', 'v'])
+
+        labels = Util.get_annotated_labels_from_predictions_and_sm_segments(frame_level_predictions, segments, timestamps)
+
+        self.assertListEqual(['v', 's'], [l.label for l in labels])

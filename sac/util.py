@@ -18,6 +18,34 @@ import pandas as pd
 class Util(object):
 
     @staticmethod
+    def get_annotated_labels_from_predictions_and_sm_segments(frame_level_predictions, sm_segments, timestamps):
+
+        labeled_segments = []
+        timestamps = np.array(timestamps)
+
+        for segment in sm_segments:
+
+            indices = np.where(np.logical_and(timestamps >= segment.start_seconds, timestamps <= segment.end_seconds))[0]
+            segment_predictions = frame_level_predictions[indices]
+            class_percentages = Util.calculate_classes_percentages(segment_predictions)
+            classes = []
+            percentages = []
+            for key in class_percentages.keys():
+                classes.append(key)
+                percentages.append(class_percentages[key])
+            df = pd.DataFrame({
+                "class": classes,
+                "percentage": percentages
+            })
+            df = df.sort_values(by="percentage", ascending=False)
+            detected_class_based_on_percentage = df.iloc[0]['class']
+
+            segment.label = detected_class_based_on_percentage
+            labeled_segments.append(segment)
+
+        return labeled_segments
+
+    @staticmethod
     def non_maximum_suppression(peaks, values):
 
         lbls = []
@@ -34,7 +62,7 @@ class Util(object):
             # no peaks
             if items[0][0] == "p":
                 if len(items) == 1:
-                    new_peaks.append(k)
+                    new_peaks.append(items[0][1])
                 else:
                     group_peak_values = [item[2] for item in items]
                     argmax = np.argmax(group_peak_values)

@@ -92,18 +92,19 @@ def get_checkerboard_matrix(kernel_width, kernel_type="default"):
         ))
 
 
-def checkerboard_matrix_filtering(similarity_matrix, kernel_width, thresh=PEAK_THRESH):
+def checkerboard_matrix_filtering(similarity_matrix, kernel_width, kernel_type="default", thresh=PEAK_THRESH):
 
     """
     Moving the checkerboard matrix over the main diagonal of the similarity matrix one sample at a time.
 
+    :param kernel_type:
     :param thresh:
     :param similarity_matrix:
     :param kernel_width: the size of one quarter of the checkerboard matrix
     :return: peaks and convolution values
     """
 
-    checkerboard_matrix = get_checkerboard_matrix(kernel_width, "default")
+    checkerboard_matrix = get_checkerboard_matrix(kernel_width, kernel_type)
 
     # The values calculated in this step are starting from the 'kernel_width' position and ending
     # at length - kernel_width

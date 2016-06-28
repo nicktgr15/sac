@@ -1,17 +1,15 @@
-import os
 from unittest import TestCase
-from mock import patch, call
 
+import os
+from mock import patch, call
 from sac.cli.wav_editor import WavEditor
 
 
 class TestWavEditor(TestCase):
-
     @patch('sac.cli.wav_editor.Util')
     @patch('sac.cli.wav_editor.WavEditor.get_rows')
     @patch('sac.cli.wav_editor.WavEditor.create_audio_segment')
     def test_create_audio_segments_f1(self, mocked_create_audio_segment, mocked_get_rows, mocked_util):
-
         mocked_get_rows.return_value = [
             ["1.00", "2.00", "m"],
             ["2.50", "3.00", "v"]
@@ -32,7 +30,6 @@ class TestWavEditor(TestCase):
     @patch('sac.cli.wav_editor.WavEditor.get_rows')
     @patch('sac.cli.wav_editor.WavEditor.create_audio_segment')
     def test_create_audio_segments_f2(self, mocked_create_audio_segment, mocked_get_rows, mocked_util):
-
         mocked_get_rows.return_value = [
             ["1.00", "2.00", "m"],
             ["2.50", "3.00", "v"]
@@ -56,11 +53,11 @@ class TestWavEditor(TestCase):
 
         # then
         mocked_subprocess.check_call.called_once_with(
-            ["sox", "input_wav", "output_wav", "trim", "0.50", "1.50"]
+                ["sox", "input_wav", "output_wav", "trim", "0.50", "1.50"]
         )
 
     @patch('sac.cli.wav_editor.os.listdir')
-    def test_get_files_grouped_by_class(self,  mocked_os_listdir):
+    def test_get_files_grouped_by_class(self, mocked_os_listdir):
         mocked_os_listdir.return_value = [
             "first_file_class1.wav",
             "second_file_class2.wav"
@@ -72,13 +69,11 @@ class TestWavEditor(TestCase):
         self.assertTrue(files_grouped_by_class.has_key("class2"))
         self.assertEqual(2, len(files_grouped_by_class))
 
-
     @patch('sac.cli.wav_editor.Util')
     @patch('sac.cli.wav_editor.logging')
     @patch('sac.cli.wav_editor.subprocess')
     @patch('sac.cli.wav_editor.WavEditor.get_files_grouped_by_class')
     def test_combine_audio_segments(self, mocked_get_files, mocked_subprocess, mocked_logging, mocked_util):
-
         mocked_get_files.return_value = {
             "class1": [
                 "file1",
@@ -106,3 +101,12 @@ class TestWavEditor(TestCase):
         rows = WavEditor.get_rows(tab_separated, '\t')
         self.assertEquals(3, len(rows))
         self.assertEquals(3, len(rows[0]))
+
+    def test_get_non_overlapping_items(self):
+        rows = [['0.000000000', '22.530612244', 'm'], ['20.015600907', '2.461315192', 's'],
+                ['22.530612244', '27.820408163', 'm'], ['49.959183673', '5.028571428', 's']]
+        non_overlapping_rows = WavEditor.get_non_overlapping_items(rows)
+
+        expected = [['0.0', '20.015600907', 'm'], ['22.476916099', '22.530612244', 'm'],
+                    ['22.530612244', '49.959183673', 'm']]
+        self.assertListEqual(expected, non_overlapping_rows)
