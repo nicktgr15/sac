@@ -8,10 +8,8 @@ matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 import peakutils
 
-PEAK_THRESH = 0.25
 
-
-def get_segments(timestamps, sm, filter_width, kernel_width, thresh=PEAK_THRESH, draw=False):
+def get_segments(timestamps, sm, filter_width, kernel_width, thresh=0.25, draw=False):
 
     sm = uniform_filter(sm, filter_width)
 
@@ -92,7 +90,7 @@ def get_checkerboard_matrix(kernel_width, kernel_type="default"):
         ))
 
 
-def checkerboard_matrix_filtering(similarity_matrix, kernel_width, kernel_type="default", thresh=PEAK_THRESH):
+def checkerboard_matrix_filtering(similarity_matrix, kernel_width, kernel_type="default", thresh=0.25):
 
     """
     Moving the checkerboard matrix over the main diagonal of the similarity matrix one sample at a time.

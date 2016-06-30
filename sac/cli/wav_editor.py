@@ -7,6 +7,7 @@ import uuid
 import sys
 
 import os
+from sac.model.audacity_label import AudacityLabel
 from sac.util import Util
 
 def all_same(items):
@@ -50,8 +51,88 @@ class WavEditor(object):
         subprocess.check_call(["sox", input_wav, output_wav, "trim", start_time, duration])
 
     @staticmethod
+    def are_labels_overlapping(label1, label2):
+        """
+        non-overlap cases
+
+        |---------| lbl1
+                      |--------| lbl2
+
+                    |---------| lbl1
+        |---------| lbl2
+
+
+        :param label1:
+        :param label2:
+        :return:
+        """
+
+        if (
+                                label2.start_seconds > label1.end_seconds and
+                                label2.start_seconds > label1.start_seconds and
+                                label2.end_seconds > label1.start_seconds and
+                                label2.end_seconds > label1.start_seconds) or (
+                                label2.start_seconds < label1.start_seconds and
+                                label2.end_seconds < label1.start_seconds and
+                                label2.start_seconds < label1.end_seconds and
+                                label2.end_seconds < label1.end_seconds):
+            return False
+        else:
+            return True
+
+
+    @staticmethod
+    def get_non_overlapping_items_v2(rows_in_f2):
+
+        transformed_rows = []
+        for row in rows_in_f2:
+            transformed_rows.append([float(row[0]), float(row[0])+float(row[1]), row[2]])
+
+        print transformed_rows
+
+        overlapping_rows = []
+        rescan = True
+
+        while rescan:
+            print "rescan"
+            overlapping = False
+            for i in range(len(transformed_rows)):
+                row1 = transformed_rows[i]
+                lbl1 = AudacityLabel(row1[0], row1[1], row1[2])
+                for j in range(i+1, len(transformed_rows)):
+                    row2 = transformed_rows[j]
+                    lbl2 = AudacityLabel(row2[0], row2[1], row2[2])
+
+                    print lbl1
+                    print lbl2
+
+                    if WavEditor.are_labels_overlapping(lbl1, lbl2):
+                        print "overlapping!"
+                        overlapping_rows.append(row1)
+                        overlapping_rows.append(row2)
+                        overlapping = True
+                        del transformed_rows[i]
+                        del transformed_rows[j-1]
+                        break
+                if overlapping:
+                    break
+
+            if overlapping:
+                rescan = True
+            else:
+                rescan = False
+
+            print transformed_rows
+
+        return transformed_rows
+
+
+
+
+    @staticmethod
     def get_non_overlapping_items(rows_in_f2):
 
+        # transform rows from f2 to f1
         transformed_rows = []
         for row in rows_in_f2:
             transformed_rows.append([float(row[0]), float(row[0])+float(row[1]), row[2]])
@@ -130,7 +211,7 @@ class WavEditor(object):
             rows = WavEditor.get_non_overlapping_items(rows)
 
         for k, row in enumerate(rows):
-            if format == "f1":
+            if format == "f1" or (format == "f2" and remove_overlapping):
                 start_time = row[0]
                 end_time = row[1]
             elif format == "f2":

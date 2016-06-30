@@ -2,6 +2,7 @@ from unittest import TestCase
 
 import os
 from mock import patch, call
+from sac.model.audacity_label import AudacityLabel
 from sac.cli.wav_editor import WavEditor
 
 
@@ -110,3 +111,75 @@ class TestWavEditor(TestCase):
         expected = [['0.0', '20.015600907', 'm'], ['22.476916099', '22.530612244', 'm'],
                     ['22.530612244', '49.959183673', 'm']]
         self.assertListEqual(expected, non_overlapping_rows)
+
+    def test_get_non_overlapping_items_v2(self):
+
+        rows = [['0.000000000', '22.530612244', 'm'], ['20.015600907', '2.461315192', 's'],
+                ['22.530612244', '27.820408163', 'm'], ['49.959183673', '5.028571428', 's'],
+                ['80.959183673', '5.028571428', 's']]
+        non_overlapping_rows = WavEditor.get_non_overlapping_items_v2(rows)
+
+        expected = [[80.959183673, 85.987755101, 's']]
+        self.assertListEqual(expected, non_overlapping_rows)
+
+    def test_are_labels_overlapping(self):
+
+        """
+        |---------| lbl1
+                      |--------| lbl2
+        """
+
+        lbl1 = AudacityLabel(0.0, 10.0, '')
+        lbl2 = AudacityLabel(11.0, 13.0, '')
+
+        self.assertFalse(WavEditor.are_labels_overlapping(lbl1, lbl2))
+
+        """
+                        |---------| lbl1
+        |--------| lbl2
+        """
+
+        lbl1 = AudacityLabel(10.0, 12.0, '')
+        lbl2 = AudacityLabel(0.0, 8.0, '')
+
+        self.assertFalse(WavEditor.are_labels_overlapping(lbl1, lbl2))
+
+        """
+                        |---------| lbl1
+        |-------------------| lbl2
+        """
+
+        lbl1 = AudacityLabel(10.0, 12.0, '')
+        lbl2 = AudacityLabel(0.0, 11.0, '')
+
+        self.assertTrue(WavEditor.are_labels_overlapping(lbl1, lbl2))
+
+        """
+        |-----------------| lbl1
+                      |--------| lbl2
+        """
+
+        lbl1 = AudacityLabel(0.0, 12.0, '')
+        lbl2 = AudacityLabel(11.0, 13.0, '')
+
+        self.assertTrue(WavEditor.are_labels_overlapping(lbl1, lbl2))
+
+        """
+                |-----------------| lbl1
+                      |--------| lbl2
+        """
+
+        lbl1 = AudacityLabel(0.0, 12.0, '')
+        lbl2 = AudacityLabel(5.0, 10.0, '')
+
+        self.assertTrue(WavEditor.are_labels_overlapping(lbl1, lbl2))
+
+        """
+                            |------| lbl1
+                      |-------------| lbl2
+        """
+
+        lbl1 = AudacityLabel(5.0, 10.0, '')
+        lbl2 = AudacityLabel(3.0, 12.0, '')
+
+        self.assertTrue(WavEditor.are_labels_overlapping(lbl1, lbl2))
