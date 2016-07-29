@@ -14,12 +14,12 @@ setup(
         'sac.methods',
         'sac.methods.sm_analysis'
     ],
-    version='0.5.5',
+    version='0.6.0',
     description='Semantic Audio Companion',
     author='Nikolaos Tsipas',
     author_email='nicktgr15@yahoo.com',
     url='https://github.com/nicktgr15/sac',
-    download_url='https://github.com/nicktgr15/sac/releases/tag/0.5.5',
+    download_url='https://github.com/nicktgr15/sac/releases/tag/0.6.0',
     keywords=['semantic', 'audio', 'sox', 'similarity', 'matrix'],
     classifiers=[],
     install_requires=['matplotlib', 'numpy', 'scipy', 'scipy', 'sympy', 'peakutils', 'scikit-learn', 'pandas']
