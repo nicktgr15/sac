@@ -1,7 +1,7 @@
 
 from scipy.ndimage import uniform_filter
 from scipy.signal import find_peaks_cwt
-from scipy.spatial.distance import pdist, squareform
+from scipy.spatial.distance import pdist, squareform, cdist
 import numpy as np
 
 import matplotlib
@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 plt.rcParams['xtick.labelsize'] = 8
 
 
-def calculate_similarity_matrix(feature_vectors, subarray_size=None):
+def calculate_similarity_matrix(feature_vectors, metric="cosine", subarray_size=None):
 
     if subarray_size is None:
         subarray_size = feature_vectors.shape[0]
@@ -19,11 +19,41 @@ def calculate_similarity_matrix(feature_vectors, subarray_size=None):
     size = feature_vectors.shape[0]
     sm = np.zeros((size, size))
 
-    for i in range(0, size, subarray_size):
-        subarray_distances = pdist(feature_vectors[i:i + subarray_size * 2], 'cosine')
-        subarray_distances = squareform(subarray_distances)
-        sm[i:i + subarray_distances.shape[0], i:i + subarray_distances.shape[0]] = subarray_distances
+    for i in range(0, feature_vectors.shape[0]):
+        distances_forward = cdist([feature_vectors[i]], feature_vectors[i:i + subarray_size, :], metric=metric)
+        distances_forward = np.squeeze(distances_forward)
+
+        back_start = i-subarray_size
+        if back_start < 0:
+            back_start = 0
+
+        distances_backward = cdist([feature_vectors[i]], feature_vectors[back_start:i, :], metric=metric)
+        distances_backward = np.squeeze(distances_backward)
+
+        if len(distances_forward.shape) != 0:
+            sm[i, i:i+distances_forward.shape[0]] = distances_forward
+        else:
+            sm[i, i:i+1] = distances_forward
+
+        if len(distances_backward.shape) != 0:
+            sm[i, i-distances_backward.shape[0]:i] = distances_backward
+        else:
+            sm[i, i-1:i] = distances_backward
+
     return sm
+
+    #
+    # if subarray_size is None:
+    #     subarray_size = feature_vectors.shape[0]
+    #
+    # size = feature_vectors.shape[0]
+    # sm = np.zeros((size, size))
+    #
+    # for i in range(0, size, subarray_size):
+    #     subarray_distances = pdist(feature_vectors[i:i + subarray_size * 2], metric=metric)
+    #     subarray_distances = squareform(subarray_distances)
+    #     sm[i:i + subarray_distances.shape[0], i:i + subarray_distances.shape[0]] = subarray_distances
+    # return sm
 
 
 def get_checkerboard_matrix(kernel_width):
@@ -117,7 +147,7 @@ def draw_similarity_matrix(similarity_matrix, peaks, convolution_values, image_f
 def get_segments(feature_vectors, timestamps, kernel_width, peak_range, filter_width, save_image=False,
                  image_filename="similarity_matrix.png", subarray_size=None):
 
-    sm = calculate_similarity_matrix(feature_vectors, subarray_size)
+    sm = calculate_similarity_matrix(feature_vectors, subarray_size=subarray_size)
 
     sm = uniform_filter(sm, filter_width)
 

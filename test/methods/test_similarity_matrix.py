@@ -13,24 +13,28 @@ class TestSimilarityMatrix(TestCase):
             [1, 1, 1],
             [1, 1, 1],
             [1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0],
+            [0, 0, 1],
+            [0, 0, 1],
             [1, 1, 1],
             [1, 1, 1],
             [2, 2, 2],
             [2, 2, 2],
-            [0, 0, 0],
-            [0, 0, 0],
+            [0, 0, 1],
+            [0, 0, 1],
             [2, 2, 2],
             [2, 2, 2]
         ])
         sm = self_similarity.calculate_similarity_matrix(example_feature_vectors)
 
-        self.assertTrue(sm[6, 0] == 0)
-        self.assertTrue(sm[7, 1] == 0)
+        # plt.figure()
+        # plt.imshow(sm, cmap=plt.cm.gray)
+        # plt.show()
 
-        self.assertTrue(sm[4, 0] != 0)
-        self.assertTrue(sm[5, 0] != 0)
+        self.assertAlmostEqual(sm[6, 0], 0)
+        self.assertAlmostEqual(sm[7, 1], 0)
+
+        self.assertNotAlmostEqual(sm[4, 0], 0)
+        self.assertNotAlmostEqual(sm[5, 0], 0)
 
         self.assertEqual(example_feature_vectors.shape[0], sm.shape[0])
         self.assertEqual(sm.shape[0], sm.shape[1])

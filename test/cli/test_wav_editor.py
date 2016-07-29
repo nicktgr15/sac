@@ -183,3 +183,18 @@ class TestWavEditor(TestCase):
         lbl2 = AudacityLabel(3.0, 12.0, '')
 
         self.assertTrue(WavEditor.are_labels_overlapping(lbl1, lbl2))
+
+    @patch('subprocess.check_output')
+    @patch('glob.glob')
+    def test_create_labels_from_segments(self, mocked_glob, mocked_check_output):
+        mocked_glob.return_value = [
+            "lala_m.wav",
+            "lala_s.wav"
+        ]
+        mocked_check_output.return_value = "13.10"
+        dir = "/Users/nicktgr15/workspace/ieee_paper/datasets/mirex/matlab_segments"
+        labels = WavEditor.create_labels_from_segments(dir)
+
+        self.assertEqual("m", labels[0].label)
+        self.assertEqual("s", labels[1].label)
+        self.assertEqual(26.2, labels[1].end_seconds)

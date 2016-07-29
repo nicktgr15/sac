@@ -5,10 +5,12 @@ import csv
 import tempfile
 import uuid
 import sys
+import glob
 
 import os
 from sac.model.audacity_label import AudacityLabel
 from sac.util import Util
+
 
 def all_same(items):
     return all(x[2] == items[0][2] for x in items)
@@ -45,6 +47,22 @@ def not_in_overlapping(item, overlapping_items):
     return True
 
 class WavEditor(object):
+
+    @staticmethod
+    def create_labels_from_segments(segments_dir):
+        end_point = 0
+        labels = []
+        wavs = glob.glob(segments_dir + "/*.wav")
+        for wav in wavs:
+            duration = subprocess.check_output(["soxi", "-D", wav])
+            start_point = end_point
+            end_point = start_point + float(duration)
+            segment_class = wav.split(".")[-2].split("_")[-1]
+            labels.append(AudacityLabel(start_point, end_point, segment_class))
+
+        return labels
+
+
     @staticmethod
     def create_audio_segment(start_time, end_time, input_wav, output_wav):
         duration = str(float(end_time) - float(start_time))

@@ -1,3 +1,5 @@
+import math
+
 from matplotlib.patches import Rectangle
 from sac.model.audacity_label import AudacityLabel
 from scipy.ndimage import uniform_filter
@@ -44,7 +46,26 @@ def get_window_in_seconds(timestamps):
     return timestamps[1] - timestamps[0]
 
 
-def get_checkerboard_matrix(kernel_width, kernel_type="default"):
+def get_gaussian_kernel(kernel_width, gaussian_param):
+
+    quarter = np.ones((kernel_width, kernel_width))
+
+    for i in range(0, quarter.shape[0]):
+        for j in range(0, quarter.shape[1]):
+            m = max([i, j])
+            quarter[i, j] = math.exp(gaussian_param * (-m**2))
+
+    return np.vstack((
+        np.hstack((
+            -1 * np.flipud(np.fliplr(quarter)), np.flipud(quarter)
+        )),
+        np.hstack((
+            np.fliplr(quarter), -1 * quarter)
+        ))
+    )
+
+
+def get_checkerboard_matrix(kernel_width, kernel_type="default", gaussian_param=0.1):
 
     """
     example matrix for width = 2
@@ -58,6 +79,9 @@ def get_checkerboard_matrix(kernel_width, kernel_type="default"):
     :param kernel_width:
     :return:
     """
+
+    if kernel_type is "gaussian":
+        return get_gaussian_kernel(kernel_width, gaussian_param)
 
     if kernel_type is "default":
         return np.vstack((

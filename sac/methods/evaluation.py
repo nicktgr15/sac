@@ -1,7 +1,53 @@
 
-def segments_precision_recall_fs(ground_truth_segments, detected_segments, tolerance):
-    print "Ground truth segments: %s" % len(ground_truth_segments)
-    print "Detected segments: %s" % len(detected_segments)
+def get_classification_based_on_time_range(start_time, end_time, labels):
+    for label in labels:
+        if start_time >= label.start_seconds and end_time < label.end_seconds:
+            return label.label
+    raise Exception("can't find label matching start %s and end time %s" % (start_time, end_time))
+
+
+def frame_level_evaluation(ground_truth_labels, detected_labels, frame_sec=0.01, verbose=False):
+
+    correctly_classified = 0
+    total_frames = 0
+    incorrectly_classified = 0
+
+    for ground_truth_label in ground_truth_labels:
+        current = ground_truth_label.start_seconds
+        while current < ground_truth_label.end_seconds - frame_sec:
+            total_frames += 1
+            try:
+                if ground_truth_label.label == get_classification_based_on_time_range(current, current+frame_sec,
+                                                                                      detected_labels):
+                    correctly_classified += 1
+                else:
+                    incorrectly_classified += 1
+
+            except Exception as e:
+                # print e
+                pass
+
+            current += frame_sec
+
+    if verbose:
+        print correctly_classified
+        print incorrectly_classified
+        print total_frames
+
+    precision = correctly_classified / float(correctly_classified + incorrectly_classified)
+    recall = correctly_classified / float(total_frames)
+    fs = (2 * precision * recall) / (precision + recall)
+
+    if verbose:
+        print "FRAME LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
+
+    return precision, recall, fs
+
+
+def segments_precision_recall_fs(ground_truth_segments, detected_segments, tolerance, verbose=False):
+    if verbose:
+        print "Ground truth segments: %s" % len(ground_truth_segments)
+        print "Detected segments: %s" % len(detected_segments)
 
     correctly_detected_transition_points = 0
 
@@ -14,7 +60,8 @@ def segments_precision_recall_fs(ground_truth_segments, detected_segments, toler
                         correctly_detected_transition_points += 1
                         break
 
-    print "Correctly detected transition points: %s" % correctly_detected_transition_points
+    if verbose:
+        print "Correctly detected segments: %s" % correctly_detected_transition_points
 
     if len(detected_segments) > 0:
         precision = correctly_detected_transition_points / float(len(detected_segments)-1)
@@ -28,13 +75,16 @@ def segments_precision_recall_fs(ground_truth_segments, detected_segments, toler
         fs = (2 * precision * recall) / (precision + recall)
     else:
         fs = 0
-    print "SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
+    if verbose:
+        print "SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
 
     return precision, recall, fs
 
-def transition_points_precision_recall_fs(ground_truth_segments, detected_segments, tolerance):
-    print "Ground truth segments: %s" % len(ground_truth_segments)
-    print "Detected segments: %s" % len(detected_segments)
+
+def transition_points_precision_recall_fs(ground_truth_segments, detected_segments, tolerance, verbose=False):
+    if verbose:
+        print "Ground truth segments: %s" % len(ground_truth_segments)
+        print "Detected segments: %s" % len(detected_segments)
 
     correctly_detected_transition_points = 0
 
@@ -45,7 +95,8 @@ def transition_points_precision_recall_fs(ground_truth_segments, detected_segmen
                 correctly_detected_transition_points += 1
                 break
 
-    print "Correctly detected transition points: %s" % correctly_detected_transition_points
+    if verbose:
+        print "Correctly detected transition points: %s" % correctly_detected_transition_points
 
     if len(detected_segments) > 0:
         precision = correctly_detected_transition_points / float(len(detected_segments)-1)
@@ -59,6 +110,8 @@ def transition_points_precision_recall_fs(ground_truth_segments, detected_segmen
         fs = (2 * precision * recall) / (precision + recall)
     else:
         fs = 0
-    print "SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
+
+    if verbose:
+        print "SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
 
     return precision, recall, fs
