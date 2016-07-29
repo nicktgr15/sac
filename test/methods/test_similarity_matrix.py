@@ -1,9 +1,6 @@
 from unittest import TestCase
 from sac.methods import self_similarity
 import numpy as np
-import matplotlib
-matplotlib.use('TKAgg')
-import matplotlib.pyplot as plt
 
 
 class TestSimilarityMatrix(TestCase):

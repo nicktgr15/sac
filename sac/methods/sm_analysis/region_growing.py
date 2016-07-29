@@ -5,11 +5,9 @@ from mpmath import e
 import peakutils
 from scipy.ndimage import uniform_filter
 from sympy import Symbol
+import matplotlib.pyplot as plt
 
 import matplotlib
-
-matplotlib.use('TKAgg')
-import matplotlib.pyplot as plt
 
 STEP = 1
 REGION_MAX_SIZE = 35

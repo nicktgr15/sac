@@ -3,9 +3,6 @@ from scipy.ndimage import uniform_filter
 from scipy.signal import find_peaks_cwt
 from scipy.spatial.distance import pdist, squareform, cdist
 import numpy as np
-
-import matplotlib
-matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 
 plt.rcParams['xtick.labelsize'] = 8

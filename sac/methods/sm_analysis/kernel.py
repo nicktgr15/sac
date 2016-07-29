@@ -5,8 +5,6 @@ from sac.model.audacity_label import AudacityLabel
 from scipy.ndimage import uniform_filter
 import numpy as np
 from scipy.signal import find_peaks_cwt
-import matplotlib
-matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 import peakutils
 
