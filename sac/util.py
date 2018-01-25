@@ -9,7 +9,7 @@ import os
 import re
 import numpy as np
 import itertools
-from model.audacity_label import AudacityLabel
+from sac.model.audacity_label import AudacityLabel
 from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
 import pandas as pd
@@ -97,8 +97,6 @@ class Util(object):
 
         kmeans = KMeans(n_clusters=clusters)
         kmeans.fit(random_samples_from_image)
-        # print kmeans.cluster_centers_
-        # print kmeans.labels_
 
         y = kmeans.predict(sm_reshaped)
 

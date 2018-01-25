@@ -46,8 +46,6 @@ def calculate_region_sums_and_boundaries(start_position, sm, region_max_size=REG
 
         region_boundaries.append([start_row, end_row, start_col, end_col])
 
-        # print "%s:%s, %s:%s" % (start_row, end_row, start_col, end_col)
-
         subarray = sm[start_row: end_row, start_col: end_col]
         region_sums.append(numpy.sum(subarray))
         region_stds.append(numpy.std(subarray))

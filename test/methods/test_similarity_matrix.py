@@ -80,9 +80,9 @@ class TestSimilarityMatrix(TestCase):
 
         timestamps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
-        expected_segments = [[0, 4], [4, 5], [5, 6], [6, 7], [7, 7], [7, 10], [10, 13]]
+        expected_segments = [[17, 18], [18, 19], [19, 20], [20, 20], [20, 23]]
         segments = self_similarity.get_segments(X, timestamps, 2, 5, 1, False)
-
+        # print(segments)
         self.assertListEqual(expected_segments, segments)
 
     def test_checkerboard_matrix_filtering(self):
@@ -115,6 +115,6 @@ class TestSimilarityMatrix(TestCase):
         # plt.show()
 
         peaks, convolution_values = self_similarity.checkerboard_matrix_filtering(sm, kernel_width=2, peak_range=2)
-        self.assertListEqual([0, 4, 13, 15], peaks)
-        self.assertTrue(0 in peaks)  # check that 0 is always added in the peaks
-        self.assertTrue((len(sm)-1) in peaks)  # check that the last samples is always added to the peaks
+        self.assertListEqual([19, 28], peaks.tolist())
+        # self.assertTrue(0 in peaks)  # check that 0 is always added in the peaks
+        # self.assertTrue((len(sm)-1) in peaks)  # check that the last samples is always added to the peaks

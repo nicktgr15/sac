@@ -66,8 +66,8 @@ class TestWavEditor(TestCase):
 
         files_grouped_by_class = WavEditor.get_files_grouped_by_class("input_dir")
 
-        self.assertTrue(files_grouped_by_class.has_key("class1"))
-        self.assertTrue(files_grouped_by_class.has_key("class2"))
+        self.assertTrue("class1" in files_grouped_by_class)
+        self.assertTrue("class2" in files_grouped_by_class)
         self.assertEqual(2, len(files_grouped_by_class))
 
     @patch('sac.cli.wav_editor.Util')
@@ -90,7 +90,7 @@ class TestWavEditor(TestCase):
         mocked_subprocess.check_call.assert_has_calls([
             call(['sox', 'file2', 'output_dir/output_name_class2.wav']),
             call(['sox', 'file1', "file3", 'output_dir/output_name_class1.wav'])
-        ])
+        ], any_order=True)
 
     def test_get_rows(self):
         comma_separated = os.path.join(os.path.dirname(__file__), 'fixtures/comma-separated.csv')

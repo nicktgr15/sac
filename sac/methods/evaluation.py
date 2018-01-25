@@ -24,30 +24,29 @@ def frame_level_evaluation(ground_truth_labels, detected_labels, frame_sec=0.01,
                     incorrectly_classified += 1
 
             except Exception as e:
-                # print e
                 pass
 
             current += frame_sec
 
     if verbose:
-        print correctly_classified
-        print incorrectly_classified
-        print total_frames
+        print(correctly_classified)
+        print(incorrectly_classified)
+        print(total_frames)
 
     precision = correctly_classified / float(correctly_classified + incorrectly_classified)
     recall = correctly_classified / float(total_frames)
     fs = (2 * precision * recall) / (precision + recall)
 
     if verbose:
-        print "FRAME LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
+        print("FRAME LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs))
 
     return precision, recall, fs
 
 
 def segments_precision_recall_fs(ground_truth_segments, detected_segments, tolerance, verbose=False):
     if verbose:
-        print "Ground truth segments: %s" % len(ground_truth_segments)
-        print "Detected segments: %s" % len(detected_segments)
+        print("Ground truth segments: %s" % len(ground_truth_segments))
+        print("Detected segments: %s" % len(detected_segments))
 
     correctly_detected_transition_points = 0
 
@@ -61,7 +60,7 @@ def segments_precision_recall_fs(ground_truth_segments, detected_segments, toler
                         break
 
     if verbose:
-        print "Correctly detected segments: %s" % correctly_detected_transition_points
+        print("Correctly detected segments: %s" % correctly_detected_transition_points)
 
     if len(detected_segments) > 0:
         precision = correctly_detected_transition_points / float(len(detected_segments)-1)
@@ -76,15 +75,15 @@ def segments_precision_recall_fs(ground_truth_segments, detected_segments, toler
     else:
         fs = 0
     if verbose:
-        print "SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
+        print("SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs))
 
     return precision, recall, fs
 
 
 def transition_points_precision_recall_fs(ground_truth_segments, detected_segments, tolerance, verbose=False):
     if verbose:
-        print "Ground truth segments: %s" % len(ground_truth_segments)
-        print "Detected segments: %s" % len(detected_segments)
+        print("Ground truth segments: %s" % len(ground_truth_segments))
+        print("Detected segments: %s" % len(detected_segments))
 
     correctly_detected_transition_points = 0
 
@@ -96,7 +95,7 @@ def transition_points_precision_recall_fs(ground_truth_segments, detected_segmen
                 break
 
     if verbose:
-        print "Correctly detected transition points: %s" % correctly_detected_transition_points
+        print("Correctly detected transition points: %s" % correctly_detected_transition_points)
 
     if len(detected_segments) > 0:
         precision = correctly_detected_transition_points / float(len(detected_segments)-1)
@@ -112,6 +111,6 @@ def transition_points_precision_recall_fs(ground_truth_segments, detected_segmen
         fs = 0
 
     if verbose:
-        print "SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs)
+        print("SEGMENT LEVEL EVALUATION => Precision: %s Recall: %s F1 Score: %s" % (precision, recall, fs))
 
     return precision, recall, fs

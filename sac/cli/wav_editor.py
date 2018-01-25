@@ -106,13 +106,13 @@ class WavEditor(object):
         for row in rows_in_f2:
             transformed_rows.append([float(row[0]), float(row[0])+float(row[1]), row[2]])
 
-        print transformed_rows
+        print(transformed_rows)
 
         overlapping_rows = []
         rescan = True
 
         while rescan:
-            print "rescan"
+            print("rescan")
             overlapping = False
             for i in range(len(transformed_rows)):
                 row1 = transformed_rows[i]
@@ -121,11 +121,11 @@ class WavEditor(object):
                     row2 = transformed_rows[j]
                     lbl2 = AudacityLabel(row2[0], row2[1], row2[2])
 
-                    print lbl1
-                    print lbl2
+                    print(lbl1)
+                    print(lbl2)
 
                     if WavEditor.are_labels_overlapping(lbl1, lbl2):
-                        print "overlapping!"
+                        print("overlapping!")
                         overlapping_rows.append(row1)
                         overlapping_rows.append(row2)
                         overlapping = True
@@ -140,7 +140,7 @@ class WavEditor(object):
             else:
                 rescan = False
 
-            print transformed_rows
+            print(transformed_rows)
 
         return transformed_rows
 
@@ -173,8 +173,8 @@ class WavEditor(object):
             elif len(overlapping_rows) != 0 and not_in_overlapping(row, overlapping):
                 overlapping.append(overlapping_rows)
 
-        print overlapping
-        print non_overlapping
+        print(overlapping)
+        print(non_overlapping)
 
         new_overlapping = []
 
@@ -193,7 +193,6 @@ class WavEditor(object):
 
         # find m s s s .. pattern
         for o in overlapping:
-            # print o
             if o[0][2] == "m" and all_same(o[1:]):
                 cut_points = [o[0][0]]
                 m_section = o[0]
@@ -207,7 +206,6 @@ class WavEditor(object):
                         has_end = False
                 if has_end:
                     cut_points.append(m_section[1])
-            # print cut_points
             non_overlapping.extend(chunks(cut_points, 2))
 
         for i in range(len(non_overlapping)):

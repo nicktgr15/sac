@@ -94,10 +94,7 @@ def checkerboard_matrix_filtering(similarity_matrix, kernel_width, peak_range):
     d = []
     for i in range(0, similarity_matrix.shape[0] - 2 * kernel_width):
         base = similarity_matrix[i:i + kernel_width * 2, i:i + kernel_width * 2]
-        print base
         d.append(np.sum(np.multiply(base, checkerboard_matrix)))
-
-    print d
 
     # The missing values from 0 to kernel_width are calculated here
     top_left_d = []
