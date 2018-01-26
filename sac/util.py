@@ -372,7 +372,7 @@ class Util(object):
         :param audacity_labels: list containing audacity label objects
         :return:
         """
-        with open(filename, "wb") as f:
+        with open(filename, "w") as f:
             for label in audacity_labels:
                 f.write("%s\t%s\t%s\n" % (label.start_seconds, label.end_seconds, label.label))
 
