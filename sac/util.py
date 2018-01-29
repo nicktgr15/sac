@@ -415,7 +415,7 @@ class Util(object):
     @staticmethod
     def read_audacity_labels(labels_file):
         audacity_labels = []
-        with open(labels_file, 'rb') as csv_file:
+        with open(labels_file, 'r') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter='\t')
             for row in csv_reader:
                 audacity_labels.append(AudacityLabel(row[0], row[1], row[2]))
