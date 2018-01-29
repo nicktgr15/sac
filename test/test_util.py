@@ -133,11 +133,12 @@ class UtilTests(TestCase):
             AudacityLabel(4.5, 6.0, "s")
         ]
 
-        x, y, classes = Util.get_annotated_data_x_y(timestamps, data, labels)
+        x, y, classes, timestamps = Util.get_annotated_data_x_y(timestamps, data, labels)
 
         self.assertEqual(3, x.shape[0])
         self.assertListEqual(["m", "s", "s"], y)
         self.assertListEqual(["m", "s"], classes)
+        self.assertListEqual([0.0, 1.0, 2.0], timestamps)
 
     def test_split_data_based_on_annotation(self):
         X = np.array([
@@ -190,7 +191,31 @@ class UtilTests(TestCase):
 
         self.assertListEqual(['v', 's'], [l.label for l in labels])
 
-    def test_get_mapped_annotations(self):
+
+    def test_get_shifted_data(self):
+
+        labels = [
+            AudacityLabel(1.0, 5.0, 'A'),
+            AudacityLabel(8.0, 10.0, 'B'),
+            AudacityLabel(15.0, 20.0, 'C')
+        ]
+
+        X, y, classes, new_timestamps = Util.get_annotated_data_x_y([float(i) for i in range(0,25)], np.ones((25, 10)),
+                                                                    labels)
+
+        self.assertListEqual(['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C', 'C'], y)
+        self.assertListEqual([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0], new_timestamps)
+
+        shifted_labels = Util.get_annotation_time_shift(labels)
+
+        shifted_predictions, shifted_timestamps = Util.get_shifted_data(y, new_timestamps, shifted_labels)
+
+        self.assertListEqual(['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C', 'C'],
+                             shifted_predictions)
+        self.assertListEqual([1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 9.0, 10.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0],
+                             shifted_timestamps)
+
+    def test_get_annotation_time_shift(self):
 
         labelsA = [
             AudacityLabel(1.0, 5.0, 'A'),

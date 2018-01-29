@@ -18,6 +18,22 @@ import pandas as pd
 class Util(object):
 
     @staticmethod
+    def get_shifted_data(predictions, timestamps, shifted_labels):
+        shifted_timestamps = []
+        shifted_predictions = []
+
+        shifted_labels = sorted(shifted_labels, key=lambda k: k['new_label'].start_seconds)
+
+        for i in range(0, len(predictions)):
+
+            for lbl in shifted_labels:
+                if lbl['new_label'].start_seconds <= timestamps[i] <= lbl['new_label'].end_seconds:
+                    shifted_predictions.append(lbl['new_label'].label)
+                    shifted_timestamps.append(timestamps[i] + lbl['shift'])
+
+        return shifted_predictions, shifted_timestamps
+
+    @staticmethod
     def get_annotation_time_shift(labels):
         new_labels = []
 
@@ -145,8 +161,20 @@ class Util(object):
 
     @staticmethod
     def get_annotated_data_x_y(timestamps, data, lbls):
+        """
+        DOESN'T work with OVERLAPPING labels
+
+        :param timestamps:
+        :param data:
+        :param lbls:
+        :return:
+        """
 
         timestamps = np.array(timestamps)
+
+        timestamp_step = timestamps[3]-timestamps[2]
+        current_new_timestamp = 0.0
+        new_timestamps = []
 
         X = None
         Y = []
@@ -161,11 +189,13 @@ class Util(object):
                     else:
                         X = np.vstack((X, data[i, :]))
                     Y.append(lbl.label)
+                    new_timestamps.append(current_new_timestamp)
+                    current_new_timestamp += timestamp_step
 
                     if lbl.label not in classes:
                         classes.append(lbl.label)
 
-        return X, Y, classes
+        return X, Y, classes, new_timestamps
 
     @staticmethod
     def get_annotated_data(timestamps, data, lbls):
