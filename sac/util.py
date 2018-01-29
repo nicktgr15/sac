@@ -28,10 +28,13 @@ class Util(object):
 
             for lbl in shifted_labels:
                 if lbl['new_label'].start_seconds <= timestamps[i] <= lbl['new_label'].end_seconds:
-                    shifted_predictions.append(lbl['new_label'].label)
+                    # shifted_predictions.append(lbl['new_label'].label)
                     shifted_timestamps.append(timestamps[i] + lbl['shift'])
 
-        return shifted_predictions, shifted_timestamps
+        # print(predictions)
+        # print(shifted_timestamps)
+
+        return predictions, shifted_timestamps
 
     @staticmethod
     def get_annotation_time_shift(labels):

@@ -208,10 +208,10 @@ class UtilTests(TestCase):
 
         shifted_labels = Util.get_annotation_time_shift(labels)
 
-        shifted_predictions, shifted_timestamps = Util.get_shifted_data(y, new_timestamps, shifted_labels)
+        predictions, shifted_timestamps = Util.get_shifted_data(y, new_timestamps, shifted_labels)
 
         self.assertListEqual(['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C', 'C'],
-                             shifted_predictions)
+                             predictions)
         self.assertListEqual([1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 9.0, 10.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0],
                              shifted_timestamps)
 
