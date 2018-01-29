@@ -18,6 +18,28 @@ import pandas as pd
 class Util(object):
 
     @staticmethod
+    def get_annotation_time_shift(labels):
+        new_labels = []
+
+        for k, lbl in enumerate(labels):
+            if k == 0:
+                new_label = AudacityLabel(0, lbl.end_seconds-lbl.start_seconds, lbl.label)
+            else:
+                new_label = AudacityLabel(
+                    start_seconds=lbl.start_seconds-(lbl.start_seconds-new_labels[-1]["new_label"].end_seconds),
+                    end_seconds=lbl.end_seconds-(lbl.start_seconds-new_labels[-1]["new_label"].end_seconds),
+                    label=lbl.label
+                )
+            shift = lbl.start_seconds - new_label.start_seconds
+            new_labels.append({
+                "old_label": lbl,
+                "new_label": new_label,
+                "shift": shift
+            })
+
+        return new_labels
+
+    @staticmethod
     def get_annotated_labels_from_predictions_and_sm_segments(frame_level_predictions, sm_segments, timestamps):
 
         labeled_segments = []
