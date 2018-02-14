@@ -18,25 +18,6 @@ import pandas as pd
 class Util(object):
 
     @staticmethod
-    def get_shifted_data(predictions, timestamps, shifted_labels):
-        shifted_timestamps = []
-        shifted_predictions = []
-
-        shifted_labels = sorted(shifted_labels, key=lambda k: k['new_label'].start_seconds)
-
-        for i in range(0, len(predictions)):
-
-            for lbl in shifted_labels:
-                if lbl['new_label'].start_seconds <= timestamps[i] <= lbl['new_label'].end_seconds:
-                    # shifted_predictions.append(lbl['new_label'].label)
-                    shifted_timestamps.append(timestamps[i] + lbl['shift'])
-
-        # print(predictions)
-        # print(shifted_timestamps)
-
-        return predictions, shifted_timestamps
-
-    @staticmethod
     def get_annotation_time_shift(labels):
         new_labels = []
 
@@ -57,6 +38,16 @@ class Util(object):
             })
 
         return new_labels
+
+    @staticmethod
+    def get_unshifted_timestamps(timestamps, shifted_unshifted_lbls):
+        reversed_timestamps = []
+        for t in timestamps:
+            for shifted_unshifted_lbl in shifted_unshifted_lbls:
+                if shifted_unshifted_lbl['new_label'].start_seconds <= t < shifted_unshifted_lbl['new_label'].end_seconds:
+                    reversed_timestamps.append(t + shifted_unshifted_lbl['shift'])
+                    break
+        return reversed_timestamps
 
     @staticmethod
     def get_annotated_labels_from_predictions_and_sm_segments(frame_level_predictions, sm_segments, timestamps):
@@ -186,7 +177,7 @@ class Util(object):
         for i in range(0, len(timestamps)):
 
             for lbl in lbls:
-                if lbl.start_seconds <= timestamps[i] <= lbl.end_seconds:
+                if lbl.start_seconds <= timestamps[i] < lbl.end_seconds:
                     if X is None:
                         X = data[i, :]
                     else:

@@ -126,11 +126,11 @@ class UtilTests(TestCase):
         self.assertTrue(data[6, :] in annotated_data["s"])
 
     def test_get_annotated_data_x_y(self):
-        timestamps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
-        data = np.random.rand(7, 10)
+        timestamps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
+        data = np.random.rand(8, 10)
         labels = [
             AudacityLabel(1.2, 2.5, "m"),
-            AudacityLabel(4.5, 6.0, "s")
+            AudacityLabel(4.5, 6.2, "s")
         ]
 
         x, y, classes, timestamps = Util.get_annotated_data_x_y(timestamps, data, labels)
@@ -139,6 +139,19 @@ class UtilTests(TestCase):
         self.assertListEqual(["m", "s", "s"], y)
         self.assertListEqual(["m", "s"], classes)
         self.assertListEqual([0.0, 1.0, 2.0], timestamps)
+
+        labels = [
+            AudacityLabel(1.0, 5.5, 'A'),
+            AudacityLabel(5.5, 10.0, 'B'),
+            AudacityLabel(15.0, 20.5, 'C')
+        ]
+
+        X, y, classes, new_timestamps = Util.get_annotated_data_x_y([float(i) for i in range(0, 25)], np.ones((25, 10)),
+                                                                    labels)
+
+        self.assertListEqual(['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C', 'C'], y)
+        self.assertListEqual([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0], new_timestamps)
+
 
     def test_split_data_based_on_annotation(self):
         X = np.array([
@@ -191,35 +204,40 @@ class UtilTests(TestCase):
 
         self.assertListEqual(['v', 's'], [l.label for l in labels])
 
+    def test_get_unshifted_timestamps(self):
 
-    def test_get_shifted_data(self):
-
-        labels = [
-            AudacityLabel(1.0, 5.0, 'A'),
-            AudacityLabel(8.0, 10.0, 'B'),
-            AudacityLabel(15.0, 20.0, 'C')
+        lbls = [
+            {
+                'old_label': AudacityLabel(1.0, 5.0, 'A'),
+                'new_label': AudacityLabel(0.0, 4.0, 'A'),
+                'shift': 1.0
+            },
+            {
+                'old_label': AudacityLabel(5.0, 10.0, 'B'),
+                'new_label': AudacityLabel(4.0, 9.0, 'B'),
+                'shift': 1.0
+            },
+            {
+                'old_label': AudacityLabel(15.0, 20.0, 'B'),
+                'new_label': AudacityLabel(9.0, 14.0, 'B'),
+                'shift': 6.0
+            }
         ]
 
-        X, y, classes, new_timestamps = Util.get_annotated_data_x_y([float(i) for i in range(0,25)], np.ones((25, 10)),
-                                                                    labels)
-
-        self.assertListEqual(['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C', 'C'], y)
-        self.assertListEqual([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0], new_timestamps)
-
-        shifted_labels = Util.get_annotation_time_shift(labels)
-
-        predictions, shifted_timestamps = Util.get_shifted_data(y, new_timestamps, shifted_labels)
-
-        self.assertListEqual(['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C', 'C'],
-                             predictions)
-        self.assertListEqual([1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 9.0, 10.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0],
-                             shifted_timestamps)
+        shifted_timestamps = [3.0, 5.0, 11.0]
+        expected_unshifted_timestamps = [
+            shifted_timestamps[0] + lbls[0]['shift'],
+            shifted_timestamps[1] + lbls[1]['shift'],
+            shifted_timestamps[2] + lbls[2]['shift']
+        ]
+        unshifted_timestamps = Util.get_unshifted_timestamps(shifted_timestamps, lbls)
+        self.assertListEqual(expected_unshifted_timestamps, unshifted_timestamps)
 
     def test_get_annotation_time_shift(self):
 
         labelsA = [
             AudacityLabel(1.0, 5.0, 'A'),
-            AudacityLabel(8.0, 10.0, 'B'),
+            AudacityLabel(5.0, 10.0, 'B'),
             AudacityLabel(15.0, 20.0, 'B')
         ]
 
@@ -232,14 +250,14 @@ class UtilTests(TestCase):
                     'shift': 1.0
                 },
                 {
-                    'old_label': AudacityLabel(8.0, 10.0, 'B'),
-                    'new_label': AudacityLabel(4.0, 6.0, 'B'),
-                    'shift': 4.0
+                    'old_label': AudacityLabel(5.0, 10.0, 'B'),
+                    'new_label': AudacityLabel(4.0, 9.0, 'B'),
+                    'shift': 1.0
                 },
                 {
                     'old_label': AudacityLabel(15.0, 20.0, 'B'),
-                    'new_label': AudacityLabel(6.0, 11.0, 'B'),
-                    'shift': 9.0
+                    'new_label': AudacityLabel(9.0, 14.0, 'B'),
+                    'shift': 6.0
                 }
             ]
 
