@@ -37,6 +37,8 @@ class Util(object):
                 "shift": shift
             })
 
+        new_labels = sorted(new_labels, key=lambda x:x['new_label'].start_seconds)
+
         return new_labels
 
     @staticmethod
