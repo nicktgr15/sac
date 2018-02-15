@@ -52,6 +52,19 @@ class Util(object):
         return reversed_timestamps
 
     @staticmethod
+    def get_unshifted_labels(lbls, shifted_unshifted_lbls):
+        for lbl in lbls:
+            for shifted_unshifted_lbl in shifted_unshifted_lbls:
+                if shifted_unshifted_lbl['new_label'].start_seconds <= lbl.start_seconds < shifted_unshifted_lbl['new_label'].end_seconds:
+                    lbl.start_seconds = lbl.start_seconds + shifted_unshifted_lbl['shift']
+                    break
+            for shifted_unshifted_lbl in shifted_unshifted_lbls:
+                if shifted_unshifted_lbl['new_label'].start_seconds <= lbl.end_seconds < shifted_unshifted_lbl['new_label'].end_seconds:
+                    lbl.end_seconds = lbl.end_seconds + shifted_unshifted_lbl['shift']
+                    break
+        return lbls
+
+    @staticmethod
     def get_annotated_labels_from_predictions_and_sm_segments(frame_level_predictions, sm_segments, timestamps):
 
         labeled_segments = []

@@ -204,6 +204,35 @@ class UtilTests(TestCase):
 
         self.assertListEqual(['v', 's'], [l.label for l in labels])
 
+    def test_get_unshifted_labels(self):
+
+        predicted_lbls = [
+            AudacityLabel(1.0, 3.0, "A"),
+            AudacityLabel(8.0, 12.0, "B")
+        ]
+
+        shifted_unshifted_labels = [
+            {
+                'old_label': AudacityLabel(1.0, 5.0, 'A'),
+                'new_label': AudacityLabel(0.0, 4.0, 'A'),
+                'shift': 1.0
+            },
+            {
+                'old_label': AudacityLabel(5.0, 10.0, 'B'),
+                'new_label': AudacityLabel(4.0, 9.0, 'B'),
+                'shift': 1.0
+            },
+            {
+                'old_label': AudacityLabel(15.0, 20.0, 'B'),
+                'new_label': AudacityLabel(9.0, 14.0, 'B'),
+                'shift': 6.0
+            }
+        ]
+
+        lbls = Util.get_unshifted_labels(predicted_lbls, shifted_unshifted_labels)
+
+        self.assertListEqual([AudacityLabel(2.0, 4.0, 'A'), AudacityLabel(9.0, 18.0, 'B')], lbls)
+
     def test_get_unshifted_timestamps(self):
 
         lbls = [
@@ -224,7 +253,7 @@ class UtilTests(TestCase):
             }
         ]
 
-        shifted_timestamps = [3.0, 5.0, 11.0]
+        shifted_timestamps = [3.0, 4.0, 11.0]
         expected_unshifted_timestamps = [
             shifted_timestamps[0] + lbls[0]['shift'],
             shifted_timestamps[1] + lbls[1]['shift'],
