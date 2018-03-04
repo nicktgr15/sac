@@ -9,3 +9,4 @@ sympy
 peakutils
 scikit-learn
 pandas
+webrtcvad

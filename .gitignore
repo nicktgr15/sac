@@ -7,3 +7,4 @@ venv/
 coverage.xml
 .idea
 *.iml
+.DS_Store
